@@ -265,25 +265,31 @@ function Header({ lang, setLang, t }) {
       onMouseLeave={() => setMegaOpen(null)}
     >
       <div className="container mx-auto px-3 sm:px-4">
-        <div className="flex items-center justify-between h-14 sm:h-20">
+        <div className="flex items-center justify-between h-16 sm:h-20">
 
           {/* Logo - Original + Tagline same color as brand */}
           <button
             onClick={() => go('#home')}
-            className="flex items-center gap-1.5 sm:gap-2 transition-transform duration-300"
+            className="flex items-center gap-2 transition-transform duration-300 max-w-[72%] sm:max-w-none"
             style={{ transform: open ? 'scale(0.95)' : 'scale(1)' }}
           >
             <img
               src="/images/bsv-logo.png"
               alt="BSV Mankind"
-              className="h-12 sm:h-14 md:h-16 w-auto"
+              className="h-10 sm:h-14 md:h-16 w-auto flex-shrink-0"
               draggable={false}
             />
-            <div className="block leading-tight text-left">
-              <div className="font-display font-semibold text-[11px] sm:text-sm" style={{ color: BRAND.blue }}>
+            <div className="hidden sm:block leading-tight text-left min-w-0">
+              <div
+                className="font-display font-semibold text-[9px] sm:text-sm leading-tight"
+                style={{ color: BRAND.blue }}
+              >
                 BSV Campaign
               </div>
-              <div className="text-[11px] sm:text-[11px] font-medium" style={{ color: BRAND.blue }}>
+              <div
+                className="hidden sm:block text-[11px] font-medium"
+                style={{ color: BRAND.blue }}
+              >
                 Saap Ka Vaar, Aspataal Mein Hi Upchaar
               </div>
             </div>
