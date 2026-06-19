@@ -1511,8 +1511,6 @@ function SettingsView({ api }) {
               </div>
               <MediaPicker label="Header Logo (light backgrounds)" value={s.branding.headerLogo} onChange={v => updateBranding('headerLogo', v)} />
               <MediaPicker label="Footer Logo" value={s.branding.footerLogo} onChange={v => updateBranding('footerLogo', v)} />
-              <MediaPicker label="Mobile Logo (small)" value={s.branding.mobileLogo} onChange={v => updateBranding('mobileLogo', v)} />
-              <MediaPicker label="Dark Mode Logo" value={s.branding.darkLogo} onChange={v => updateBranding('darkLogo', v)} />
               <MediaPicker label="Favicon (32x32 ICO/PNG)" value={s.branding.favicon} onChange={v => updateBranding('favicon', v)} />
               <MediaPicker label="Apple Touch Icon (180x180)" value={s.branding.appleTouchIcon} onChange={v => updateBranding('appleTouchIcon', v)} />
               <MediaPicker label="Social Sharing Image (1200x630)" value={s.branding.socialSharingImage} onChange={v => updateBranding('socialSharingImage', v)} />

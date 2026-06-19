@@ -997,7 +997,7 @@ function ContactSection({ content, t }) {
   )
 }
 
-function Footer({ content, t }) {
+function Footer({ content, t, settings }) {
   const f = content?.footer || {}
   return (
     <footer className="text-white" style={{ background: BRAND.blue }}>
@@ -1006,7 +1006,13 @@ function Footer({ content, t }) {
           <div>
             <div className="font-display font-semibold text-xl mb-2">BSV Campaign</div>
             <div className="text-sm text-white/70 mb-4">{f.tagline || 'Saap Ka Vaar, Aspataal Mein Hi Upchaar'}</div>
-            {content?.logos?.partners && <img src={content.logos.partners} alt="" className="bg-white p-2 rounded-lg max-w-[200px]" />}
+            {settings?.branding?.footerLogo && (
+              <img
+                src={settings.branding.footerLogo}
+                alt="BSV Mankind"
+                className="bg-white p-2 rounded-lg max-w-[200px]"
+              />
+            )}
           </div>
           <div>
             <div className="font-display font-semibold mb-3">{t.footer.quickLinks}</div>
@@ -1140,7 +1146,7 @@ function App() {
         <ResourcesSection content={resolved} lang={lang} t={t} />
         <ContactSection content={resolved} t={t} />
       </main>
-      <Footer content={resolved} t={t} />
+      <Footer content={resolved} t={t} settings={settings} />
     </div>
   )
 }
