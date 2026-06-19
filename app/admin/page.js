@@ -263,6 +263,7 @@ export default function AdminPage() {
   const [videos, setVideos] = useState([])
   const [quizQuestions, setQuizQuestions] = useState([])
   const [token, setToken] = useState(null)
+  const [settingsData, setSettingsData] = useState(null)
 
   useEffect(() => {
     const t = localStorage.getItem('bsv_token')
@@ -289,7 +290,7 @@ export default function AdminPage() {
   const loadAll = async (t) => {
     const h = { Authorization: `Bearer ${t}` }
     const fetchOr = async (url, def = []) => { try { const r = await fetch(url, { headers: h }); return r.ok ? await r.json() : def } catch { return def } }
-    const [c, l, q, a, m, s, n, r, v, us, ct, pt, gal, vid, quizQs] = await Promise.all([
+    const [c, l, q, a, m, s, n, r, v, us, ct, pt, gal, vid, quizQs, setg] = await Promise.all([
       fetchOr('/api/content', {}),
       fetchOr('/api/leads'),
       fetchOr('/api/quiz/results'),
@@ -305,8 +306,10 @@ export default function AdminPage() {
       fetchOr('/api/gallery'),
       fetchOr('/api/videos'),
       fetchOr('/api/quiz/questions'),
+      fetchOr('/api/settings', {}),
     ])
     setContent(c); setLeads(l); setQuiz(q); setAnalytics(a); setMedia(m); setStories(s); setNgos(n); setReports(r); setVolunteers(v); setUsers(us); setContacts(ct); setPartnerships(pt); setGallery(Array.isArray(gal) ? gal : []); setVideos(Array.isArray(vid) ? vid : []); setQuizQuestions(Array.isArray(quizQs) ? quizQs : [])
+    setSettingsData(setg)
   }
 
   const logout = () => { localStorage.removeItem('bsv_token'); localStorage.removeItem('bsv_user'); setUser(null); setToken(null) }
@@ -367,7 +370,7 @@ export default function AdminPage() {
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
             <img
-              src="/images/bsv-logo.png"
+              src={settingsData?.branding?.headerLogo}
               alt="BSV Mankind"
               className="h-12 sm:h-20 w-auto bg-white rounded-lg px-3 py-2"
             />

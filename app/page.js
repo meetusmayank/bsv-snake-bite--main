@@ -142,7 +142,7 @@ function StatesGrid({ states = [], t }) {
   )
 }
 
-function Header({ lang, setLang, t }) {
+function Header({ lang, setLang, t, settings }) {
   const [open, setOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(null)
   const [megaLeft, setMegaLeft] = useState(0)
@@ -274,7 +274,7 @@ function Header({ lang, setLang, t }) {
             style={{ transform: open ? 'scale(0.95)' : 'scale(1)' }}
           >
             <img
-              src="/images/bsv-logo.png"
+              src={settings?.branding?.headerLogo}
               alt="BSV Mankind"
               className="h-10 sm:h-14 md:h-16 w-auto flex-shrink-0"
               draggable={false}
@@ -1111,7 +1111,7 @@ function App() {
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="text-center" style={{ color: BRAND.blue }}>
         <img
-          src="/images/bsv-logo.png"
+          src={settings?.branding?.headerLogo}
           alt="BSV Mankind"
           className="h-24 md:h-28 w-auto mx-auto mb-4"
         />
@@ -1125,7 +1125,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header lang={lang} setLang={setLang} t={t} />
+      <Header lang={lang} setLang={setLang} t={t} settings={settings} />
       <main>
         <Hero content={resolved} t={t} />
         <VideoSection videos={videos} t={t} />
