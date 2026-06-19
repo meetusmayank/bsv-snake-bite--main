@@ -146,73 +146,95 @@ function Header({ lang, setLang, t }) {
   const [open, setOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(null)
   const [megaLeft, setMegaLeft] = useState(0)
+  const [scrolled, setScrolled] = useState(false)
 
-  // Mega menu structure — each top-level item with grouped sub-items
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const megaMenus = {
     awareness: {
       label: t.nav.awareness,
       groups: [
-        { title: t.awareness.items[0]?.title || 'On-Ground', items: [
-          { label: t.awareness.items[0]?.title || 'On-Ground Activations', href: '#awareness', desc: 'Nukkad natak, wall paintings, bus branding' },
-          { label: t.nav.gallery, href: '#gallery', desc: 'See campaign moments' },
-        ]},
-        { title: t.awareness.items[1]?.title || 'NGO Collaborations', items: [
-          { label: t.awareness.items[1]?.title || 'NGO Collaborations', href: '/ngo-network', desc: 'Partner network across India' },
-          { label: t.nav.stories, href: '#stories', desc: 'Real-life impact stories' },
-        ]},
-        { title: t.awareness.items[2]?.title || 'Mass & Digital Media', items: [
-          { label: t.nav.watch, href: '#video', desc: 'Campaign films & interviews' },
-          { label: t.nav.myths, href: '#myths', desc: 'Bust the myths' },
-        ]},
+        {
+          title: 'On-Ground Activations',
+          items: [
+            { label: 'Nukkad Natak, Wall Paintings, Bus Branding', href: '#awareness', desc: 'Community outreach programs' },
+            { label: 'Campaign Moments', href: '#gallery', desc: 'See campaign in action' },
+          ]
+        },
+        {
+          title: 'NGO Collaborations',
+          items: [
+            { label: 'Partner Network Across India', href: '/ngo-network', desc: 'Our NGO partners' },
+            { label: 'Real-life Impact Stories', href: '#stories', desc: 'Stories from the field' },
+          ]
+        },
+        {
+          title: 'Mass & Digital Media',
+          items: [
+            { label: 'Campaign Films & Interviews', href: '#video', desc: 'Watch our videos' },
+            { label: 'Bust the Myths', href: '#myths', desc: 'Myth vs Fact' },
+          ]
+        },
       ]
     },
     access: {
       label: t.nav.access,
       groups: [
-        { title: t.access.items[0]?.title || 'Workshops', items: [
-          { label: t.access.items[0]?.title || 'Workshops', href: '#access', desc: 'Hands-on training for clinicians, RMPs, ASHAs' },
-          { label: t.nav.outreach, href: '#outreach', desc: 'State-wise campaign reach' },
-        ]},
-        { title: t.access.items[1]?.title || 'Clinician Engagement', items: [
-          { label: t.access.items[1]?.title || 'Clinician Engagement', href: '#access', desc: 'Beyond Monsoons, Venom to Vial' },
-          { label: t.nav.stories, href: '#stories', desc: 'Stories from the field' },
-        ]},
-        { title: t.access.items[2]?.title || 'Training Modules', items: [
-          { label: t.access.items[2]?.title || 'Training Modules', href: '#resources', desc: 'ASV protocols, clinical education' },
-          { label: t.nav.resources, href: '#resources', desc: 'Download library' },
-        ]},
+        {
+          title: 'Workshops & Training',
+          items: [
+            { label: 'Clinician Training Programs', href: '#access', desc: 'Hands-on training for clinicians, RMPs, ASHAs' },
+            { label: 'State-wise Campaign Reach', href: '#outreach', desc: 'Our outreach across India' },
+          ]
+        },
+        {
+          title: 'Clinician Engagement',
+          items: [
+            { label: 'Beyond Monsoons Program', href: '#access', desc: 'Venom to Vial initiative' },
+            { label: 'Field Stories', href: '#stories', desc: 'Stories from clinicians' },
+          ]
+        },
+        {
+          title: 'Training Modules',
+          items: [
+            { label: 'ASV Protocols', href: '#resources', desc: 'Clinical education materials' },
+            { label: 'Download Library', href: '#resources', desc: 'All resources in one place' },
+          ]
+        },
       ]
     },
     communication: {
       label: t.nav.communication,
       groups: [
-        { title: t.communication.items[0]?.title || 'Posters & Brochures', items: [
-          { label: t.communication.items[0]?.title || 'Posters & Brochures', href: '#resources', desc: 'Multilingual print materials' },
-          { label: t.nav.resources, href: '#resources', desc: 'All downloads' },
-        ]},
-        { title: t.communication.items[1]?.title || 'Awareness Videos', items: [
-          { label: t.communication.items[1]?.title || 'Awareness Videos', href: '#video', desc: 'Vox pops, myth-busting reels' },
-          { label: t.nav.watch, href: '#video', desc: 'Watch the campaign' },
-        ]},
-        { title: t.communication.items[2]?.title || 'Visual Stories', items: [
-          { label: t.communication.items[2]?.title || 'Comic & Visual Stories', href: '#gallery', desc: 'Engaging visual content' },
-          { label: t.nav.gallery, href: '#gallery', desc: 'Browse gallery' },
-        ]},
+        {
+          title: 'Print Materials',
+          items: [
+            { label: 'Posters & Brochures', href: '#resources', desc: 'Multilingual print materials' },
+            { label: 'All Downloads', href: '#resources', desc: 'Complete resource library' },
+          ]
+        },
+        {
+          title: 'Video Content',
+          items: [
+            { label: 'Awareness Videos', href: '#video', desc: 'Vox pops, myth-busting reels' },
+            { label: 'Watch the Campaign', href: '#video', desc: 'Campaign in action' },
+          ]
+        },
+        {
+          title: 'Visual Stories',
+          items: [
+            { label: 'Comic & Visual Stories', href: '#gallery', desc: 'Engaging visual content' },
+            { label: 'Browse Gallery', href: '#gallery', desc: 'Photo gallery' },
+          ]
+        },
       ]
     },
   }
 
-  const simpleMenu = [
-    { id: 'home', label: t.nav.home, href: '#home' },
-    { id: 'video', label: t.nav.watch, href: '#video' },
-    { id: 'stories', label: t.nav.stories, href: '#stories' },
-    { id: 'gallery', label: t.nav.gallery, href: '#gallery' },
-    { id: 'myths', label: t.nav.myths, href: '#myths' },
-    { id: 'resources', label: t.nav.resources, href: '#resources' },
-    { id: 'contact', label: t.nav.contact, href: '#contact' },
-  ]
-
-  // Original menu kept for mobile + footer compatibility
   const menu = [
     { id: 'home', label: t.nav.home, href: '#home' },
     { id: 'video', label: t.nav.watch, href: '#video' },
@@ -220,10 +242,6 @@ function Header({ lang, setLang, t }) {
     { id: 'access', label: t.nav.access, href: '#access' },
     { id: 'communication', label: t.nav.communication, href: '#communication' },
     { id: 'outreach', label: t.nav.outreach, href: '#outreach' },
-    { id: 'stories', label: t.nav.stories, href: '#stories' },
-    { id: 'gallery', label: t.nav.gallery, href: '#gallery' },
-    { id: 'myths', label: t.nav.myths, href: '#myths' },
-    { id: 'resources', label: t.nav.resources, href: '#resources' },
     { id: 'contact', label: t.nav.contact, href: '#contact' },
   ]
 
@@ -239,104 +257,215 @@ function Header({ lang, setLang, t }) {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm" onMouseLeave={() => setMegaOpen(null)}>
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <button onClick={() => go('#home')} className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: BRAND.blue }}>
-            <Shield className="w-6 h-6 text-white" />
-          </div>
-          <div className="hidden md:block leading-tight text-left">
-            <div className="font-display font-semibold text-sm" style={{ color: BRAND.blue }}>BSV Campaign</div>
-            <div className="text-[10px] text-slate-500">Saap Ka Vaar, Aspataal Mein Hi Upchaar</div>
-          </div>
-        </button>
+    <header
+      className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 ${scrolled
+        ? 'bg-white backdrop-blur-lg border-b border-slate-200/80 shadow-lg'
+        : 'bg-white backdrop-blur-md border-b border-slate-200/50 shadow-sm'
+        }`}
+      onMouseLeave={() => setMegaOpen(null)}
+    >
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="flex items-center justify-between h-14 sm:h-20">
 
-        {/* Desktop nav with mega menu */}
-        <nav className="hidden lg:flex items-center gap-0.5">
-          <button onClick={() => go('#home')} className="px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-[#de2527] hover:bg-slate-50 rounded-md transition">{t.nav.home}</button>
-          <button onClick={() => go('#video')} className="px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-[#de2527] hover:bg-slate-50 rounded-md transition">{t.nav.watch}</button>
-
-          {/* Awareness / Access / Communication with mega dropdown */}
-          {['awareness', 'access', 'communication'].map(key => (
-            <div
-              key={key}
-              className="relative"
-              onMouseEnter={(e) => { setMegaOpen(key); setMegaLeft(e.currentTarget.getBoundingClientRect().left) }}
-            >
-              <button className={`px-2.5 py-2 text-sm font-medium rounded-md transition inline-flex items-center gap-1 ${megaOpen === key ? 'text-[#de2527] bg-slate-50' : 'text-slate-700 hover:text-[#de2527] hover:bg-slate-50'}`}>
-                {megaMenus[key].label}
-                <ChevronRight className={`w-3 h-3 transition-transform ${megaOpen === key ? 'rotate-90' : ''}`} />
-              </button>
+          {/* Logo - Original + Tagline same color as brand */}
+          <button
+            onClick={() => go('#home')}
+            className="flex items-center gap-1.5 sm:gap-2 transition-transform duration-300"
+            style={{ transform: open ? 'scale(0.95)' : 'scale(1)' }}
+          >
+            <img
+              src="/images/bsv-logo.png"
+              alt="BSV Mankind"
+              className="h-12 sm:h-14 md:h-16 w-auto"
+              draggable={false}
+            />
+            <div className="block leading-tight text-left">
+              <div className="font-display font-semibold text-[11px] sm:text-sm" style={{ color: BRAND.blue }}>
+                BSV Campaign
+              </div>
+              <div className="text-[11px] sm:text-[11px] font-medium" style={{ color: BRAND.blue }}>
+                Saap Ka Vaar, Aspataal Mein Hi Upchaar
+              </div>
             </div>
-          ))}
+          </button>
 
-          <button onClick={() => go('#outreach')} className="px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-[#de2527] hover:bg-slate-50 rounded-md transition">{t.nav.outreach}</button>
-          <button onClick={() => go('#contact')} className="px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-[#de2527] hover:bg-slate-50 rounded-md transition">{t.nav.contact}</button>
-        </nav>
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+            <button onClick={() => go('#home')} className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#de2527] hover:bg-slate-50/80 rounded-lg transition-all duration-200">
+              {t.nav.home}
+            </button>
+            <button onClick={() => go('#video')} className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#de2527] hover:bg-slate-50/80 rounded-lg transition-all duration-200">
+              {t.nav.watch}
+            </button>
 
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2"><Globe className="w-4 h-4" /><span className="hidden sm:inline">{LANGUAGES.find(l => l.code === lang)?.native}</span></Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="max-h-80 overflow-y-auto">
-              {LANGUAGES.map(l => <DropdownMenuItem key={l.code} onClick={() => setLang(l.code)} className={lang === l.code ? 'bg-slate-100 font-semibold' : ''}>{l.native} <span className="text-slate-500 ml-2 text-xs">({l.label})</span></DropdownMenuItem>)}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <button className="lg:hidden p-2" onClick={() => setOpen(!open)}>{open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}</button>
-        </div>
-      </div>
-
-      {/* Mega menu panel */}
-      {megaOpen && megaMenus[megaOpen] && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.18 }}
-          className="hidden lg:block absolute left-0 right-0 top-full bg-white border-t border-slate-200 shadow-2xl"
-          onMouseEnter={() => setMegaOpen(megaOpen)}
-        >
-          <div className="container mx-auto px-4 py-7">
-            <div className="grid grid-cols-4 gap-8">
-              {/* Left feature column */}
-              <div className="col-span-1 rounded-xl p-5 text-white" style={{ background: `linear-gradient(135deg, ${BRAND.blue}, ${BRAND.red})` }}>
-                <div className="text-xs uppercase tracking-wider opacity-80 mb-2">{t.badges[megaOpen] || megaMenus[megaOpen].label}</div>
-                <div className="font-display font-semibold text-xl mb-2 leading-tight">{megaOpen === 'awareness' ? t.awareness.title : megaOpen === 'access' ? t.access.title : t.communication.title}</div>
-                <div className="text-sm text-white/85 leading-relaxed">
-                  {megaOpen === 'awareness' ? t.awareness.subtitle : megaOpen === 'access' ? t.access.subtitle : t.communication.subtitle}
-                </div>
-                <button onClick={() => go(`#${megaOpen}`)} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold hover:underline">
-                  {t.common.learnMore} <ChevronRight className="w-4 h-4" />
+            {['awareness', 'access', 'communication'].map(key => (
+              <div
+                key={key}
+                className="relative"
+                onMouseEnter={(e) => {
+                  setMegaOpen(key)
+                  setMegaLeft(e.currentTarget.getBoundingClientRect().left)
+                }}
+              >
+                <button
+                  className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 inline-flex items-center gap-1.5 ${megaOpen === key
+                    ? 'text-[#de2527] bg-red-50/80'
+                    : 'text-slate-600 hover:text-[#de2527] hover:bg-slate-50/80'
+                    }`}
+                >
+                  {megaMenus[key].label}
+                  <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 ${megaOpen === key ? 'rotate-90 text-[#de2527]' : ''}`} />
                 </button>
               </div>
-              {/* 3 grouped sub-link columns */}
-              {megaMenus[megaOpen].groups.map((g, gi) => (
-                <div key={gi}>
-                  <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-3 border-b border-slate-100 pb-2">{g.title}</div>
-                  <ul className="space-y-2">
-                    {g.items.map((it, ii) => (
-                      <li key={ii}>
-                        <button onClick={() => go(it.href)} className="w-full text-left group">
-                          <div className="font-display font-semibold text-sm group-hover:text-[#de2527] transition" style={{ color: BRAND.blue }}>{it.label}</div>
-                          <div className="text-xs text-slate-500 group-hover:text-slate-700 transition leading-snug">{it.desc}</div>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
+            ))}
 
-      {open && (
-        <div className="lg:hidden border-t bg-white">
-          <div className="container mx-auto px-4 py-2 flex flex-col">
-            {menu.map(item => <button key={item.id} onClick={() => go(item.href)} className="text-left py-3 border-b border-slate-100 text-slate-700 font-medium">{item.label}</button>)}
+            <button onClick={() => go('#outreach')} className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#de2527] hover:bg-slate-50/80 rounded-lg transition-all duration-200">
+              {t.nav.outreach}
+            </button>
+
+            <button onClick={() => go('#contact')} className="px-4 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5" style={{ background: `linear-gradient(135deg, ${BRAND.blue}, ${BRAND.red})` }}>
+              {t.nav.contact}
+            </button>
+          </nav>
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1 sm:gap-2 border-slate-200 hover:border-[#de2527] hover:bg-red-50/50 transition-all duration-200 rounded-xl px-1 sm:px-3"
+                >
+                  <Globe className="w-4 h-4 text-slate-500" />
+                  <span className="hidden sm:inline text-sm font-medium text-slate-600">
+                    {LANGUAGES.find(l => l.code === lang)?.native}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="max-h-80 overflow-y-auto rounded-xl shadow-xl border-slate-200/80 z-[9999]">
+                {LANGUAGES.map(l => (
+                  <DropdownMenuItem
+                    key={l.code}
+                    onClick={() => setLang(l.code)}
+                    className={`${lang === l.code ? 'bg-red-50 font-semibold text-[#de2527]' : ''} cursor-pointer`}
+                  >
+                    {l.native}
+                    <span className="text-slate-400 ml-2 text-xs">({l.label})</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Mobile Menu Button - Animated */}
+            <button
+              className="lg:hidden p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 active:bg-slate-200 transition-all duration-300"
+              onClick={() => setOpen(!open)}
+            >
+              <motion.div
+                animate={{ rotate: open ? 90 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                {open ? <X className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" />}
+              </motion.div>
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Mega Menu Panel - Desktop */}
+        {megaOpen && megaMenus[megaOpen] && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="hidden lg:block absolute left-0 right-0 top-full bg-white backdrop-blur-lg border-t border-slate-200/80 shadow-2xl rounded-b-2xl z-[99999]"
+            onMouseEnter={() => setMegaOpen(megaOpen)}
+          >
+            <div className="container mx-auto px-4 py-8">
+              <div className="grid grid-cols-4 gap-8">
+                <div className="col-span-1 rounded-2xl p-6 text-white relative overflow-hidden" style={{ background: `linear-gradient(145deg, ${BRAND.blue}, ${BRAND.red})` }}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+                  <div className="relative z-10">
+                    <div className="text-xs uppercase tracking-wider opacity-80 mb-3 font-semibold">
+                      {t.badges?.[megaOpen] || megaMenus[megaOpen].label}
+                    </div>
+                    <div className="font-display font-bold text-2xl mb-3 leading-tight">
+                      {megaOpen === 'awareness' ? 'Creating Informed Communities' :
+                        megaOpen === 'access' ? 'Bridging the Gap' :
+                          'Spreading the Message'}
+                    </div>
+                    <div className="text-sm text-white/85 leading-relaxed">
+                      {megaOpen === 'awareness' ? 'Through education, outreach, and action — turning fear into facts.' :
+                        megaOpen === 'access' ? 'Ensuring every snakebite victim gets the right care at the right time.' :
+                          'Using every medium to reach every corner of India.'}
+                    </div>
+                    <button onClick={() => go(`#${megaOpen}`)} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold hover:underline underline-offset-2 transition-all group">
+                      Learn More
+                      <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </button>
+                  </div>
+                </div>
+
+                {megaMenus[megaOpen].groups.map((g, gi) => (
+                  <div key={gi} className="col-span-1">
+                    <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-4 border-b border-slate-100 pb-3">
+                      {g.title}
+                    </div>
+                    <ul className="space-y-3">
+                      {g.items.map((it, ii) => (
+                        <li key={ii}>
+                          <button onClick={() => go(it.href)} className="w-full text-left group p-2 rounded-xl hover:bg-slate-50 transition-all duration-200">
+                            <div className="font-display font-semibold text-sm group-hover:text-[#de2527] transition-colors" style={{ color: BRAND.blue }}>
+                              {it.label}
+                            </div>
+                            <div className="text-xs text-slate-400 group-hover:text-slate-600 transition-colors leading-relaxed">
+                              {it.desc}
+                            </div>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Mobile Menu - Solid Background, Items Clearly Visible */}
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="lg:hidden absolute left-0 right-0 top-full border-t border-white/10 shadow-2xl rounded-b-2xl z-[99999] max-h-[80vh] overflow-y-auto"
+            style={{ background: BRAND.blue }}
+          >
+            <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+              <div className="flex justify-center mb-2">
+                <div className="w-12 h-1 bg-white/30 rounded-full" />
+              </div>
+
+              {menu.map((item, i) => (
+                <motion.button
+                  key={item.id}
+                  onClick={() => go(item.href)}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05, duration: 0.2 }}
+                  className={`w-full text-left py-3.5 sm:py-3 px-3 rounded-xl text-sm font-medium text-white hover:bg-white/10 hover:text-white active:bg-white/20 transition-all duration-200 flex items-center justify-between group ${i > 0 ? 'border-t border-white/10 mt-1 pt-3.5 sm:pt-3' : ''
+                    }`}
+                >
+                  <span>{item.label}</span>
+                  <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-200" />
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </div>
     </header>
   )
 }
@@ -344,30 +473,90 @@ function Header({ lang, setLang, t }) {
 function Hero({ content, t }) {
   const stats = content?.heroStats || []
   return (
-    <section id="home" className="relative min-h-[100vh] flex items-end overflow-hidden pt-16 bg-gradient-to-br from-slate-50 to-slate-100">
+    <section id="home" className="relative min-h-[100vh] flex items-end overflow-hidden pt-16">
+      {/* Background */}
       <div className="absolute inset-0">
         {content?.hero?.image && <img src={content.hero.image} alt="" className="w-full h-full object-cover" />}
-        <div className="absolute inset-0 gradient-hero-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-red-900/20" />
       </div>
-      <div className="relative container mx-auto px-4 lg:px-8 py-12 w-full">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-3xl mb-8">
-          <Badge className="text-white border-0 mb-5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider" style={{ background: BRAND.red }}>
-            <Sparkles className="w-3 h-3 mr-1" /> {t.badges.initiative}
-          </Badge>
-          <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-semibold text-white leading-[1.05] mb-5 drop-shadow-2xl">{content?.hero?.title}</h1>
-          <p className="text-base md:text-lg text-white/90 max-w-2xl leading-relaxed drop-shadow-lg font-normal">{content?.hero?.subtitle}</p>
-        </motion.div>
-        {/* Smaller, more compact stat cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-3 max-w-5xl">
+
+      <div className="relative container mx-auto px-3 sm:px-4 lg:px-8 py-8 sm:py-12 w-full">
+
+        <div className="relative mb-6 sm:mb-8 min-h-[420px] sm:min-h-[350px]">
+
+          {/* ===== LEFT SIDE TEXT - TOP LEFT ===== */}
+          <div className="absolute left-0 top-0 max-w-[65%] sm:max-w-[55%]">
+            <div
+              className="text-xl sm:text-2xl md:text-4xl font-extrabold uppercase tracking-wider text-white"
+              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 4px 40px rgba(0,0,0,0.8)' }}
+            >
+              {content?.hero?.leftTop}
+            </div>
+
+            <div
+              className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none"
+              style={{
+                color: '#de2527',
+                textShadow: '0 4px 30px rgba(0,0,0,0.9)'
+              }}
+            >
+              {content?.hero?.bigNumber}
+            </div>
+
+            <div
+              className="text-xl sm:text-xl md:text-4xl font-extrabold uppercase leading-tight mt-1 sm:mt-3 whitespace-pre-line text-white"
+              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 4px 40px rgba(0,0,0,0.8)' }}
+            >
+              {content?.hero?.leftBottom}
+            </div>
+          </div>
+
+          {/* ===== RIGHT SIDE TEXT - BOTTOM RIGHT ===== */}
+          <div className="absolute right-0 bottom-8 text-right max-w-[65%] sm:max-w-[50%]">
+            <div
+              className="text-xl sm:text-2xl md:text-6xl font-black uppercase leading-tight"
+              style={{
+                color: '#de2527',
+                textShadow: '0 4px 30px rgba(0,0,0,0.9)'
+              }}
+            >
+              {content?.hero?.rightMain}
+            </div>
+
+            <div
+              className="text-lg sm:text-xl md:text-4xl font-extrabold uppercase leading-tight"
+              style={{
+                color: '#de2527',
+                textShadow: '0 4px 30px rgba(0,0,0,0.9)'
+              }}
+            >
+              {content?.hero?.rightSub}
+            </div>
+
+            <div
+              className="text-sm sm:text-base md:text-2xl italic text-white mt-0.5 sm:mt-2 font-medium"
+              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 4px 40px rgba(0,0,0,0.8)' }}
+            >
+              {content?.hero?.tagline}
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2.5 md:gap-3 max-w-5xl">
           {stats.map((s, i) => {
             const Icon = ICONS[s.icon] || Heart
             return (
               <motion.div key={s.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
                 <Card className="bg-white/95 backdrop-blur shadow-xl hover:-translate-y-1 transition border-0">
-                  <CardContent className="p-3 md:p-4">
-                    <Icon className="w-5 h-5 md:w-6 md:h-6 mb-1.5" style={{ color: BRAND.red }} />
-                    <div className="font-display font-semibold text-xl md:text-2xl mb-0.5 leading-tight" style={{ color: BRAND.blue }}><AnimatedCounter value={s.value} suffix={s.suffix} /></div>
-                    <div className="text-[11px] md:text-xs text-slate-600 font-medium leading-tight">{s.label}</div>
+                  <CardContent className="p-2 sm:p-3 md:p-4">
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 mb-1 sm:mb-1.5" style={{ color: BRAND.red }} />
+                    <div className="font-display font-bold text-sm sm:text-xl md:text-2xl mb-0.5 leading-tight" style={{ color: BRAND.blue }}>
+                      <AnimatedCounter value={s.value} suffix={s.suffix} />
+                    </div>
+                    <div className="text-[8px] sm:text-[11px] md:text-xs text-slate-700 font-semibold leading-tight">
+                      {s.label}
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -902,19 +1091,26 @@ function App() {
     else { const browser = navigator.language?.split('-')[0]; if (LANGUAGES.find(l => l.code === browser)) next = browser }
     if (next) setLang(next)
     fetch('/api/content').then(r => r.json()).then(d => { setContent(d); setLoading(false) }).catch(() => setLoading(false))
-    fetch('/api/impact-stories').then(r => r.ok ? r.json() : []).then(d => setStories(Array.isArray(d) ? d : [])).catch(() => {})
-    fetch('/api/gallery').then(r => r.ok ? r.json() : []).then(d => setAlbums(Array.isArray(d) ? d : [])).catch(() => {})
-    fetch('/api/videos').then(r => r.ok ? r.json() : []).then(d => setVideos(Array.isArray(d) ? d : [])).catch(() => {})
-    fetch('/api/settings').then(r => r.ok ? r.json() : null).then(d => d && setSettings(d)).catch(() => {})
+    fetch('/api/impact-stories').then(r => r.ok ? r.json() : []).then(d => setStories(Array.isArray(d) ? d : [])).catch(() => { })
+    fetch('/api/gallery').then(r => r.ok ? r.json() : []).then(d => setAlbums(Array.isArray(d) ? d : [])).catch(() => { })
+    fetch('/api/videos').then(r => r.ok ? r.json() : []).then(d => setVideos(Array.isArray(d) ? d : [])).catch(() => { })
+    fetch('/api/settings').then(r => r.ok ? r.json() : null).then(d => d && setSettings(d)).catch(() => { })
   }, [])
 
   useEffect(() => { if (typeof window !== 'undefined') localStorage.setItem('bsv_lang', lang) }, [lang])
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: BRAND.blue }}>
-      <div className="text-white text-center">
-        <Shield className="w-16 h-16 mx-auto mb-4 animate-pulse" />
-        <div className="font-display font-semibold text-xl">{t.common.loading}</div>
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="text-center" style={{ color: BRAND.blue }}>
+        <img
+          src="/images/bsv-logo.png"
+          alt="BSV Mankind"
+          className="h-24 md:h-28 w-auto mx-auto mb-4"
+        />
+
+        <div className="font-display font-semibold text-xl">
+          Saap Ka Vaar, Aspataal Mein Hi Upchaar
+        </div>
       </div>
     </div>
   )

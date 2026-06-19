@@ -50,9 +50,22 @@ function MediaPicker({ value, onChange, label = 'Image' }) {
     <div>
       <Label>{label}</Label>
       <div className="flex gap-2 items-start mt-1">
-        {value && <img src={value} alt="" className="w-16 h-16 object-cover rounded border" />}
+        {value && (
+          <div className="w-16 h-16 rounded border overflow-hidden bg-slate-100 flex items-center justify-center">
+            <img
+              src={value}
+              alt=""
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+                e.currentTarget.parentElement.innerHTML =
+                  '<div style="font-size:11px;color:#64748b;text-align:center;padding:4px;">File</div>'
+              }}
+            />
+          </div>
+        )}
         <div className="flex-1 flex gap-2">
-          <Input value={value || ''} onChange={e => onChange(e.target.value)} placeholder="Image URL or pick from library" />
+          <Input value={value || ''} onChange={e => onChange(e.target.value)} placeholder="URL or pick from library" />
           <Button type="button" size="sm" variant="outline" onClick={() => setOpen(true)}><ImageIcon className="w-4 h-4" /></Button>
         </div>
       </div>
@@ -71,7 +84,7 @@ function MediaPicker({ value, onChange, label = 'Image' }) {
                 ) : (
                   <div className="w-full h-32 bg-slate-100 flex items-center justify-center"><FileText className="w-10 h-10 text-slate-400" /></div>
                 )}
-                <div className="p-2"><div className="text-xs font-medium truncate">{m.title}</div><div className="text-[10px] text-muted-foreground">{(m.size/1024).toFixed(1)} KB</div></div>
+                <div className="p-2"><div className="text-xs font-medium truncate">{m.title}</div><div className="text-[10px] text-muted-foreground">{(m.size / 1024).toFixed(1)} KB</div></div>
               </button>
             ))}
           </div>
@@ -195,14 +208,14 @@ function AITranslateButton({ text, onResult }) {
   const [translations, setTranslations] = useState({})
   const token = typeof window !== 'undefined' ? localStorage.getItem('bsv_token') : null
   const translate = async (lang) => {
-    setLoading(s => ({...s, [lang]: true}))
+    setLoading(s => ({ ...s, [lang]: true }))
     try {
       const r = await fetch('/api/ai/translate', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ text, targetLang: lang }) })
       const data = await r.json()
-      if (r.ok) setTranslations(s => ({...s, [lang]: data.translated}))
+      if (r.ok) setTranslations(s => ({ ...s, [lang]: data.translated }))
       else toast.error('Translation failed: ' + data.error)
     } catch { toast.error('Translation error') }
-    setLoading(s => ({...s, [lang]: false}))
+    setLoading(s => ({ ...s, [lang]: false }))
   }
   return (
     <>
@@ -338,11 +351,10 @@ export default function AdminPage() {
               <p className="text-sm text-muted-foreground">Role-based content management</p>
             </div>
             <div className="space-y-3">
-              <div><Label>Email</Label><Input type="email" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} placeholder="admin@bsv.com" /></div>
-              <div><Label>Password</Label><Input type="password" value={loginForm.password} onChange={e => setLoginForm({...loginForm, password: e.target.value})} onKeyDown={e => e.key === 'Enter' && login()} /></div>
+              <div><Label>Email</Label><Input type="email" value={loginForm.email} onChange={e => setLoginForm({ ...loginForm, email: e.target.value })} placeholder="admin@bsv.com" /></div>
+              <div><Label>Password</Label><Input type="password" value={loginForm.password} onChange={e => setLoginForm({ ...loginForm, password: e.target.value })} onKeyDown={e => e.key === 'Enter' && login()} /></div>
               <Button onClick={login} className="w-full bg-bsv-blue hover:bg-bsv-blue/90">Login</Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-4 text-center">Default: admin@bsv.com / bsv_admin_2025</p>
           </CardContent>
         </Card>
       </div>
@@ -354,7 +366,11 @@ export default function AdminPage() {
       <header className="bg-bsv-blue text-white sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Shield className="w-7 h-7" />
+            <img
+              src="/images/bsv-logo.png"
+              alt="BSV Mankind"
+              className="h-16 sm:h-20 w-auto bg-white rounded-lg px-3 py-2"
+            />
             <div>
               <div className="font-display font-extrabold">BSV Admin CMS</div>
               <div className="text-xs text-white/70">{user.name} • {user.role.replace('_', ' ')}</div>
@@ -373,14 +389,14 @@ export default function AdminPage() {
             <TabsTrigger value="dashboard"><BarChart3 className="w-4 h-4 mr-1" />Dashboard</TabsTrigger>
             <TabsTrigger value="content"><FileText className="w-4 h-4 mr-1" />Sections</TabsTrigger>
             <TabsTrigger value="media"><ImageIcon className="w-4 h-4 mr-1" />Media</TabsTrigger>
-            <TabsTrigger value="stories"><Heart className="w-4 h-4 mr-1" />Stories</TabsTrigger>
+            {/*<TabsTrigger value="stories"><Heart className="w-4 h-4 mr-1" />Stories</TabsTrigger> */}
             <TabsTrigger value="ngos"><Building2 className="w-4 h-4 mr-1" />NGOs</TabsTrigger>
-            <TabsTrigger value="gallery"><Images className="w-4 h-4 mr-1" />Gallery</TabsTrigger>
+            {/*<TabsTrigger value="gallery"><Images className="w-4 h-4 mr-1" />Gallery</TabsTrigger>*/}
             <TabsTrigger value="videos"><Play className="w-4 h-4 mr-1" />Videos</TabsTrigger>
             <TabsTrigger value="reports"><FileImage className="w-4 h-4 mr-1" />Reports</TabsTrigger>
             <TabsTrigger value="leads"><Users className="w-4 h-4 mr-1" />Leads</TabsTrigger>
-            <TabsTrigger value="quiz"><Award className="w-4 h-4 mr-1" />Quiz Results</TabsTrigger>
-            <TabsTrigger value="quizq"><HelpCircle className="w-4 h-4 mr-1" />Quiz Q&amp;A</TabsTrigger>
+            {/*<TabsTrigger value="quiz"><Award className="w-4 h-4 mr-1" />Quiz Results</TabsTrigger>
+            <TabsTrigger value="quizq"><HelpCircle className="w-4 h-4 mr-1" />Quiz Q&amp;A</TabsTrigger>*/}
             <TabsTrigger value="contacts"><MessageSquare className="w-4 h-4 mr-1" />Contacts</TabsTrigger>
             <TabsTrigger value="partnerships"><Megaphone className="w-4 h-4 mr-1" />Partners</TabsTrigger>
             <TabsTrigger value="volunteers"><UserPlus className="w-4 h-4 mr-1" />Volunteers</TabsTrigger>
@@ -409,9 +425,9 @@ export default function AdminPage() {
               })}
             </div>
             <div className="grid md:grid-cols-3 gap-4">
-              <Card><CardContent className="p-5"><h3 className="font-display font-bold mb-3">Leads by State</h3>{analytics?.byState?.slice(0,10).map(s => <div key={s._id} className="flex justify-between py-1 border-b last:border-0 text-sm"><span>{s._id||'Unknown'}</span><Badge variant="outline">{s.count}</Badge></div>)}{!analytics?.byState?.length && <p className="text-sm text-muted-foreground">No data</p>}</CardContent></Card>
-              <Card><CardContent className="p-5"><h3 className="font-display font-bold mb-3">Leads by Purpose</h3>{analytics?.byPurpose?.map(s => <div key={s._id} className="flex justify-between py-1 border-b last:border-0 text-sm"><span>{s._id||'Unknown'}</span><Badge variant="outline">{s.count}</Badge></div>)}{!analytics?.byPurpose?.length && <p className="text-sm text-muted-foreground">No data</p>}</CardContent></Card>
-              <Card><CardContent className="p-5"><h3 className="font-display font-bold mb-3">Myth Heatmap (Quiz)</h3>{analytics?.mythHeatmap?.slice(0,5).map(s => <div key={s._id} className="py-1 border-b last:border-0"><div className="flex justify-between text-sm"><span className="font-medium">{s._id||'?'}</span><Badge>{s.count}</Badge></div></div>)}{!analytics?.mythHeatmap?.length && <p className="text-sm text-muted-foreground">No data</p>}</CardContent></Card>
+              <Card><CardContent className="p-5"><h3 className="font-display font-bold mb-3">Leads by State</h3>{analytics?.byState?.slice(0, 10).map(s => <div key={s._id} className="flex justify-between py-1 border-b last:border-0 text-sm"><span>{s._id || 'Unknown'}</span><Badge variant="outline">{s.count}</Badge></div>)}{!analytics?.byState?.length && <p className="text-sm text-muted-foreground">No data</p>}</CardContent></Card>
+              <Card><CardContent className="p-5"><h3 className="font-display font-bold mb-3">Leads by Purpose</h3>{analytics?.byPurpose?.map(s => <div key={s._id} className="flex justify-between py-1 border-b last:border-0 text-sm"><span>{s._id || 'Unknown'}</span><Badge variant="outline">{s.count}</Badge></div>)}{!analytics?.byPurpose?.length && <p className="text-sm text-muted-foreground">No data</p>}</CardContent></Card>
+              <Card><CardContent className="p-5"><h3 className="font-display font-bold mb-3">Myth Heatmap (Quiz)</h3>{analytics?.mythHeatmap?.slice(0, 5).map(s => <div key={s._id} className="py-1 border-b last:border-0"><div className="flex justify-between text-sm"><span className="font-medium">{s._id || '?'}</span><Badge>{s.count}</Badge></div></div>)}{!analytics?.mythHeatmap?.length && <p className="text-sm text-muted-foreground">No data</p>}</CardContent></Card>
             </div>
           </TabsContent>
 
@@ -426,8 +442,8 @@ export default function AdminPage() {
                       if (!confirm('This will use AI to translate ALL content to all 8 Indian languages. May take 1-2 minutes. Continue?')) return
                       toast.info('Translating to 8 languages... please wait')
                       try {
-                        const r = await api('/api/ai/translate-all', 'POST', { content, targetLangs: ['hi','mr','kn','ta','te','or','pa','bn'] })
-                        if (r.ok) { const d = await r.json(); setContent(d.content); toast.success(`Translated! ${Object.entries(d.results).map(([k,v])=>`${k}:${v}`).join(', ')}`) }
+                        const r = await api('/api/ai/translate-all', 'POST', { content, targetLangs: ['hi', 'mr', 'kn', 'ta', 'te', 'or', 'pa', 'bn'] })
+                        if (r.ok) { const d = await r.json(); setContent(d.content); toast.success(`Translated! ${Object.entries(d.results).map(([k, v]) => `${k}:${v}`).join(', ')}`) }
                         else toast.error('Translation failed')
                       } catch { toast.error('Network error') }
                     }} className="bg-purple-600 text-white hover:bg-purple-700"><Sparkles className="w-4 h-4 mr-1" />AI Translate All Content</Button>
@@ -440,10 +456,10 @@ export default function AdminPage() {
                 <Card><CardContent className="p-5">
                   <h3 className="font-display font-bold text-lg text-bsv-blue mb-3">Section Visibility & Order</h3>
                   <div className="grid md:grid-cols-3 gap-3">
-                    {Object.entries(content.sections || {}).sort((a,b) => a[1].order - b[1].order).map(([key, val]) => (
+                    {Object.entries(content.sections || {}).sort((a, b) => a[1].order - b[1].order).map(([key, val]) => (
                       <div key={key} className="flex items-center justify-between border rounded p-3">
                         <div><div className="font-medium capitalize">{key}</div><div className="text-xs text-muted-foreground">Order: {val.order}</div></div>
-                        <Switch checked={val.enabled} onCheckedChange={c => setContent({...content, sections: {...content.sections, [key]: {...val, enabled: c}}})} />
+                        <Switch checked={val.enabled} onCheckedChange={c => setContent({ ...content, sections: { ...content.sections, [key]: { ...val, enabled: c } } })} />
                       </div>
                     ))}
                   </div>
@@ -452,10 +468,63 @@ export default function AdminPage() {
                 {/* HERO */}
                 <Card><CardContent className="p-5 space-y-3">
                   <h3 className="font-display font-bold text-lg text-bsv-blue">Hero Section</h3>
-                  <MediaPicker label="Hero Background Image" value={content.hero.image} onChange={v => setContent({...content, hero: {...content.hero, image: v}})} />
-                  <div className="flex gap-2 items-end"><div className="flex-1"><Label>Title</Label><Input value={content.hero.title} onChange={e => setContent({...content, hero: {...content.hero, title: e.target.value}})} /></div><AITranslateButton text={content.hero.title} /></div>
-                  <div className="flex gap-2 items-end"><div className="flex-1"><Label>Subtitle</Label><Textarea value={content.hero.subtitle} onChange={e => setContent({...content, hero: {...content.hero, subtitle: e.target.value}})} /></div><AITranslateButton text={content.hero.subtitle} /></div>
-                  <div className="grid grid-cols-2 gap-3"><div><Label>Primary CTA</Label><Input value={content.hero.cta1} onChange={e => setContent({...content, hero: {...content.hero, cta1: e.target.value}})} /></div><div><Label>Secondary CTA</Label><Input value={content.hero.cta2} onChange={e => setContent({...content, hero: {...content.hero, cta2: e.target.value}})} /></div></div>
+                  <MediaPicker label="Hero Background Image" value={content.hero.image} onChange={v => setContent({ ...content, hero: { ...content.hero, image: v } })} />
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div>
+                      <Label>Left Top Text</Label>
+                      <Input
+                        value={content.hero.leftTop || ''}
+                        onChange={e => setContent({ ...content, hero: { ...content.hero, leftTop: e.target.value } })}
+                        placeholder="INDIA LOSES"
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Big Number</Label>
+                      <Input
+                        value={content.hero.bigNumber || ''}
+                        onChange={e => setContent({ ...content, hero: { ...content.hero, bigNumber: e.target.value } })}
+                        placeholder="50,000"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Left Bottom Text</Label>
+                    <Textarea
+                      value={content.hero.leftBottom || ''}
+                      onChange={e => setContent({ ...content, hero: { ...content.hero, leftBottom: e.target.value } })}
+                      placeholder="LIVES TO SNAKE&#10;BITES EVERY YEAR"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Right Main Text</Label>
+                    <Input
+                      value={content.hero.rightMain || ''}
+                      onChange={e => setContent({ ...content, hero: { ...content.hero, rightMain: e.target.value } })}
+                      placeholder="SAANP KA VAAR,"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Right Sub Text</Label>
+                    <Input
+                      value={content.hero.rightSub || ''}
+                      onChange={e => setContent({ ...content, hero: { ...content.hero, rightSub: e.target.value } })}
+                      placeholder="ASPATAAL MEIN HI UPCHAAR!"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Tagline</Label>
+                    <Input
+                      value={content.hero.tagline || ''}
+                      onChange={e => setContent({ ...content, hero: { ...content.hero, tagline: e.target.value } })}
+                      placeholder="Snake bite? Only hospital can treat it right."
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3"><div><Label>Primary CTA</Label><Input value={content.hero.cta1} onChange={e => setContent({ ...content, hero: { ...content.hero, cta1: e.target.value } })} /></div><div><Label>Secondary CTA</Label><Input value={content.hero.cta2} onChange={e => setContent({ ...content, hero: { ...content.hero, cta2: e.target.value } })} /></div></div>
                 </CardContent></Card>
 
                 {/* IMPACT STATS */}
@@ -463,11 +532,11 @@ export default function AdminPage() {
                   <h3 className="font-display font-bold text-lg text-bsv-blue mb-3">Impact Statistics (8)</h3>
                   <div className="grid md:grid-cols-2 gap-3">{content.impactStats.map((s, i) => (
                     <div key={s.id} className="border rounded p-3 space-y-1">
-                      <Input value={s.label} onChange={e => { const a=[...content.impactStats]; a[i]={...a[i],label:e.target.value}; setContent({...content, impactStats: a}) }} />
+                      <Input value={s.label} onChange={e => { const a = [...content.impactStats]; a[i] = { ...a[i], label: e.target.value }; setContent({ ...content, impactStats: a }) }} />
                       <div className="grid grid-cols-3 gap-2">
-                        <Input type="number" value={s.value} onChange={e => { const a=[...content.impactStats]; a[i]={...a[i],value:parseInt(e.target.value)||0}; setContent({...content, impactStats: a}) }} />
-                        <Input value={s.suffix} placeholder="+" onChange={e => { const a=[...content.impactStats]; a[i]={...a[i],suffix:e.target.value}; setContent({...content, impactStats: a}) }} />
-                        <Input value={s.icon} placeholder="Icon" onChange={e => { const a=[...content.impactStats]; a[i]={...a[i],icon:e.target.value}; setContent({...content, impactStats: a}) }} />
+                        <Input type="number" value={s.value} onChange={e => { const a = [...content.impactStats]; a[i] = { ...a[i], value: parseInt(e.target.value) || 0 }; setContent({ ...content, impactStats: a }) }} />
+                        <Input value={s.suffix} placeholder="+" onChange={e => { const a = [...content.impactStats]; a[i] = { ...a[i], suffix: e.target.value }; setContent({ ...content, impactStats: a }) }} />
+                        <Input value={s.icon} placeholder="Icon" onChange={e => { const a = [...content.impactStats]; a[i] = { ...a[i], icon: e.target.value }; setContent({ ...content, impactStats: a }) }} />
                       </div>
                     </div>))}</div>
                 </CardContent></Card>
@@ -479,9 +548,9 @@ export default function AdminPage() {
                     <div key={s.code} className="border rounded p-3">
                       <div className="font-bold mb-2">{s.name}</div>
                       <div className="grid grid-cols-3 gap-2">
-                        <Input type="number" placeholder="Lives" value={s.lives} onChange={e => { const a=[...content.states]; a[i]={...a[i],lives:parseInt(e.target.value)||0}; setContent({...content, states: a}) }} />
-                        <Input type="number" placeholder="Villages" value={s.villages} onChange={e => { const a=[...content.states]; a[i]={...a[i],villages:parseInt(e.target.value)||0}; setContent({...content, states: a}) }} />
-                        <Input type="number" placeholder="Sessions" value={s.sessions} onChange={e => { const a=[...content.states]; a[i]={...a[i],sessions:parseInt(e.target.value)||0}; setContent({...content, states: a}) }} />
+                        <Input type="number" placeholder="Lives" value={s.lives} onChange={e => { const a = [...content.states]; a[i] = { ...a[i], lives: parseInt(e.target.value) || 0 }; setContent({ ...content, states: a }) }} />
+                        <Input type="number" placeholder="Villages" value={s.villages} onChange={e => { const a = [...content.states]; a[i] = { ...a[i], villages: parseInt(e.target.value) || 0 }; setContent({ ...content, states: a }) }} />
+                        <Input type="number" placeholder="Sessions" value={s.sessions} onChange={e => { const a = [...content.states]; a[i] = { ...a[i], sessions: parseInt(e.target.value) || 0 }; setContent({ ...content, states: a }) }} />
                       </div>
                     </div>))}</div>
                 </CardContent></Card>
@@ -489,10 +558,10 @@ export default function AdminPage() {
                 {/* ABOUT */}
                 <Card><CardContent className="p-5 space-y-3">
                   <h3 className="font-display font-bold text-lg text-bsv-blue">About Campaign</h3>
-                  <div><Label>Story</Label><Textarea rows={4} value={content.about.story} onChange={e => setContent({...content, about: {...content.about, story: e.target.value}})} /></div>
-                  <div><Label>Mission</Label><Textarea rows={2} value={content.about.mission} onChange={e => setContent({...content, about: {...content.about, mission: e.target.value}})} /></div>
-                  <div><Label>Vision</Label><Textarea rows={2} value={content.about.vision} onChange={e => setContent({...content, about: {...content.about, vision: e.target.value}})} /></div>
-                  <div><Label>Burden</Label><Input value={content.about.burden} onChange={e => setContent({...content, about: {...content.about, burden: e.target.value}})} /></div>
+                  <div><Label>Story</Label><Textarea rows={4} value={content.about.story} onChange={e => setContent({ ...content, about: { ...content.about, story: e.target.value } })} /></div>
+                  <div><Label>Mission</Label><Textarea rows={2} value={content.about.mission} onChange={e => setContent({ ...content, about: { ...content.about, mission: e.target.value } })} /></div>
+                  <div><Label>Vision</Label><Textarea rows={2} value={content.about.vision} onChange={e => setContent({ ...content, about: { ...content.about, vision: e.target.value } })} /></div>
+                  <div><Label>Burden</Label><Input value={content.about.burden} onChange={e => setContent({ ...content, about: { ...content.about, burden: e.target.value } })} /></div>
                 </CardContent></Card>
 
                 {/* EMERGENCY */}
@@ -503,55 +572,64 @@ export default function AdminPage() {
                       <div className="font-bold mb-2 text-green-700">DO&apos;S</div>
                       {content.emergencyDos.map((item, i) => (
                         <div key={i} className="border rounded p-2 mb-2 space-y-1">
-                          <Input value={item.title} onChange={e => { const a=[...content.emergencyDos]; a[i]={...a[i],title:e.target.value}; setContent({...content, emergencyDos: a}) }} />
-                          <Textarea rows={2} value={item.desc} onChange={e => { const a=[...content.emergencyDos]; a[i]={...a[i],desc:e.target.value}; setContent({...content, emergencyDos: a}) }} />
+                          <Input value={item.title} onChange={e => { const a = [...content.emergencyDos]; a[i] = { ...a[i], title: e.target.value }; setContent({ ...content, emergencyDos: a }) }} />
+                          <Textarea rows={2} value={item.desc} onChange={e => { const a = [...content.emergencyDos]; a[i] = { ...a[i], desc: e.target.value }; setContent({ ...content, emergencyDos: a }) }} />
                         </div>))}
-                      <Button size="sm" variant="outline" onClick={() => setContent({...content, emergencyDos: [...content.emergencyDos, {title: 'New', desc: ''}]})}><Plus className="w-3 h-3 mr-1" />Add</Button>
+                      <Button size="sm" variant="outline" onClick={() => setContent({ ...content, emergencyDos: [...content.emergencyDos, { title: 'New', desc: '' }] })}><Plus className="w-3 h-3 mr-1" />Add</Button>
                     </div>
                     <div>
                       <div className="font-bold mb-2 text-bsv-red">DON&apos;TS</div>
                       {content.emergencyDonts.map((item, i) => (
                         <div key={i} className="border rounded p-2 mb-2 space-y-1">
-                          <Input value={item.title} onChange={e => { const a=[...content.emergencyDonts]; a[i]={...a[i],title:e.target.value}; setContent({...content, emergencyDonts: a}) }} />
-                          <Textarea rows={2} value={item.desc} onChange={e => { const a=[...content.emergencyDonts]; a[i]={...a[i],desc:e.target.value}; setContent({...content, emergencyDonts: a}) }} />
+                          <Input value={item.title} onChange={e => { const a = [...content.emergencyDonts]; a[i] = { ...a[i], title: e.target.value }; setContent({ ...content, emergencyDonts: a }) }} />
+                          <Textarea rows={2} value={item.desc} onChange={e => { const a = [...content.emergencyDonts]; a[i] = { ...a[i], desc: e.target.value }; setContent({ ...content, emergencyDonts: a }) }} />
                         </div>))}
-                      <Button size="sm" variant="outline" onClick={() => setContent({...content, emergencyDonts: [...content.emergencyDonts, {title: 'New', desc: ''}]})}><Plus className="w-3 h-3 mr-1" />Add</Button>
+                      <Button size="sm" variant="outline" onClick={() => setContent({ ...content, emergencyDonts: [...content.emergencyDonts, { title: 'New', desc: '' }] })}><Plus className="w-3 h-3 mr-1" />Add</Button>
                     </div>
                   </div>
                 </CardContent></Card>
 
                 {/* MYTHS */}
                 <Card><CardContent className="p-5">
-                  <div className="flex justify-between mb-3"><h3 className="font-display font-bold text-lg text-bsv-blue">Myths vs Facts</h3><Button size="sm" variant="outline" onClick={() => setContent({...content, myths: [...content.myths, {id: Date.now(), myth: '', fact: ''}]})}><Plus className="w-3 h-3 mr-1" />Add</Button></div>
+                  <div className="flex justify-between mb-3"><h3 className="font-display font-bold text-lg text-bsv-blue">Myths vs Facts</h3><Button size="sm" variant="outline" onClick={() => setContent({ ...content, myths: [...content.myths, { id: Date.now(), myth: '', fact: '' }] })}><Plus className="w-3 h-3 mr-1" />Add</Button></div>
                   {content.myths.map((m, i) => (
                     <div key={m.id} className="border rounded p-3 mb-2 space-y-2">
-                      <div className="flex justify-between"><Badge className="bg-bsv-red">Myth #{i+1}</Badge><Button size="sm" variant="ghost" onClick={() => setContent({...content, myths: content.myths.filter((_,idx)=>idx!==i)})}><Trash2 className="w-3 h-3 text-red-500" /></Button></div>
-                      <Input value={m.myth} placeholder="Myth statement" onChange={e => { const a=[...content.myths]; a[i]={...a[i],myth:e.target.value}; setContent({...content, myths: a}) }} />
-                      <Textarea value={m.fact} placeholder="Scientific fact" onChange={e => { const a=[...content.myths]; a[i]={...a[i],fact:e.target.value}; setContent({...content, myths: a}) }} />
+                      <div className="flex justify-between"><Badge className="bg-bsv-red">Myth #{i + 1}</Badge><Button size="sm" variant="ghost" onClick={() => setContent({ ...content, myths: content.myths.filter((_, idx) => idx !== i) })}><Trash2 className="w-3 h-3 text-red-500" /></Button></div>
+                      <Input value={m.myth} placeholder="Myth statement" onChange={e => { const a = [...content.myths]; a[i] = { ...a[i], myth: e.target.value }; setContent({ ...content, myths: a }) }} />
+                      <Textarea value={m.fact} placeholder="Scientific fact" onChange={e => { const a = [...content.myths]; a[i] = { ...a[i], fact: e.target.value }; setContent({ ...content, myths: a }) }} />
                     </div>))}
                 </CardContent></Card>
 
                 {/* RESOURCES */}
                 <Card><CardContent className="p-5">
-                  <div className="flex justify-between mb-3"><h3 className="font-display font-bold text-lg text-bsv-blue">Resources</h3><Button size="sm" variant="outline" onClick={() => setContent({...content, resources: [...content.resources, {id: `r${Date.now()}`, title: 'New', category: 'Posters', desc: '', preview: '', file: '#'}]})}><Plus className="w-3 h-3 mr-1" />Add</Button></div>
+                  <div className="flex justify-between mb-3"><h3 className="font-display font-bold text-lg text-bsv-blue">Resources</h3><Button size="sm" variant="outline" onClick={() => setContent({ ...content, resources: [...content.resources, { id: `r${Date.now()}`, title: 'New', category: 'Posters', desc: '', preview: '', file: '#' }] })}><Plus className="w-3 h-3 mr-1" />Add</Button></div>
                   {content.resources.map((r, i) => (
                     <div key={r.id} className="border rounded p-3 mb-2 space-y-2">
                       <div className="grid grid-cols-2 gap-2">
-                        <Input value={r.title} placeholder="Title" onChange={e => { const a=[...content.resources]; a[i]={...a[i],title:e.target.value}; setContent({...content, resources: a}) }} />
-                        <Input value={r.category} placeholder="Category" onChange={e => { const a=[...content.resources]; a[i]={...a[i],category:e.target.value}; setContent({...content, resources: a}) }} />
+                        <Input value={r.title} placeholder="Title" onChange={e => { const a = [...content.resources]; a[i] = { ...a[i], title: e.target.value }; setContent({ ...content, resources: a }) }} />
+                        <Input value={r.category} placeholder="Category" onChange={e => { const a = [...content.resources]; a[i] = { ...a[i], category: e.target.value }; setContent({ ...content, resources: a }) }} />
                       </div>
-                      <MediaPicker label="Preview" value={r.preview} onChange={v => { const a=[...content.resources]; a[i]={...a[i],preview:v}; setContent({...content, resources: a}) }} />
-                      <Textarea rows={2} value={r.desc} placeholder="Description" onChange={e => { const a=[...content.resources]; a[i]={...a[i],desc:e.target.value}; setContent({...content, resources: a}) }} />
-                      <Button size="sm" variant="ghost" onClick={() => setContent({...content, resources: content.resources.filter((_,idx)=>idx!==i)})}><Trash2 className="w-3 h-3 text-red-500" />Remove</Button>
+                      <MediaPicker label="Preview" value={r.preview} onChange={v => { const a = [...content.resources]; a[i] = { ...a[i], preview: v }; setContent({ ...content, resources: a }) }} />
+                      <MediaPicker
+                        label="Upload File / PDF"
+                        value={r.file}
+                        onChange={v => {
+                          const a = [...content.resources]
+                          a[i] = { ...a[i], file: v }
+                          setContent({ ...content, resources: a })
+                        }}
+                      />
+                      <Textarea rows={2} value={r.desc} placeholder="Description" onChange={e => { const a = [...content.resources]; a[i] = { ...a[i], desc: e.target.value }; setContent({ ...content, resources: a }) }} />
+                      <Button size="sm" variant="ghost" onClick={() => setContent({ ...content, resources: content.resources.filter((_, idx) => idx !== i) })}><Trash2 className="w-3 h-3 text-red-500" />Remove</Button>
                     </div>))}
                 </CardContent></Card>
 
                 {/* CONTACT */}
                 <Card><CardContent className="p-5 space-y-3">
                   <h3 className="font-display font-bold text-lg text-bsv-blue">Contact Info</h3>
-                  <div><Label>Email</Label><Input value={content.contact.email} onChange={e => setContent({...content, contact: {...content.contact, email: e.target.value}})} /></div>
-                  <div><Label>Phone</Label><Input value={content.contact.phone} onChange={e => setContent({...content, contact: {...content.contact, phone: e.target.value}})} /></div>
-                  <div><Label>Address</Label><Textarea value={content.contact.address} onChange={e => setContent({...content, contact: {...content.contact, address: e.target.value}})} /></div>
+                  <div><Label>Email</Label><Input value={content.contact.email} onChange={e => setContent({ ...content, contact: { ...content.contact, email: e.target.value } })} /></div>
+                  <div><Label>Phone</Label><Input value={content.contact.phone} onChange={e => setContent({ ...content, contact: { ...content.contact, phone: e.target.value } })} /></div>
+                  <div><Label>Address</Label><Textarea value={content.contact.address} onChange={e => setContent({ ...content, contact: { ...content.contact, address: e.target.value } })} /></div>
                 </CardContent></Card>
               </div>
             )}
@@ -588,12 +666,12 @@ export default function AdminPage() {
           </TabsContent>
 
           {/* LEADS / QUIZ / CONTACT / PARTNERSHIPS / VOLUNTEERS */}
-          <TabsContent value="leads"><TableTab data={leads} title="Leads" exportName="leads" exportCSV={exportCSV} cols={['name','email','phone','state','purpose','score','createdAt']} /></TabsContent>
-          <TabsContent value="quiz"><TableTab data={quiz} title="Quiz Submissions" exportName="quiz" exportCSV={exportCSV} cols={['name','state','occupation','score','total','commonMyth','createdAt']} /></TabsContent>
+          <TabsContent value="leads"><TableTab data={leads} title="Leads" exportName="leads" exportCSV={exportCSV} cols={['name', 'email', 'phone', 'state', 'purpose', 'score', 'createdAt']} /></TabsContent>
+          <TabsContent value="quiz"><TableTab data={quiz} title="Quiz Submissions" exportName="quiz" exportCSV={exportCSV} cols={['name', 'state', 'occupation', 'score', 'total', 'commonMyth', 'createdAt']} /></TabsContent>
           <TabsContent value="quizq"><QuizQuestionsView items={quizQuestions} api={api} reload={() => loadAll(token)} /></TabsContent>
-          <TabsContent value="contacts"><TableTab data={contacts} title="Contact Messages" exportName="contacts" exportCSV={exportCSV} cols={['name','email','phone','message','createdAt']} /></TabsContent>
-          <TabsContent value="partnerships"><TableTab data={partnerships} title="Partnership Inquiries" exportName="partnerships" exportCSV={exportCSV} cols={['organization','type','name','email','phone','state','status','createdAt']} /></TabsContent>
-          <TabsContent value="volunteers"><TableTab data={volunteers} title="Volunteer Registrations" exportName="volunteers" exportCSV={exportCSV} cols={['name','email','phone','state','city','occupation','status','createdAt']} /></TabsContent>
+          <TabsContent value="contacts"><TableTab data={contacts} title="Contact Messages" exportName="contacts" exportCSV={exportCSV} cols={['name', 'email', 'phone', 'message', 'createdAt']} /></TabsContent>
+          <TabsContent value="partnerships"><TableTab data={partnerships} title="Partnership Inquiries" exportName="partnerships" exportCSV={exportCSV} cols={['organization', 'type', 'name', 'email', 'phone', 'state', 'status', 'createdAt']} /></TabsContent>
+          <TabsContent value="volunteers"><TableTab data={volunteers} title="Volunteer Registrations" exportName="volunteers" exportCSV={exportCSV} cols={['name', 'email', 'phone', 'state', 'city', 'occupation', 'status', 'createdAt']} /></TabsContent>
 
           {/* FOOTER */}
           <TabsContent value="footer">
@@ -602,31 +680,31 @@ export default function AdminPage() {
                 <div className="flex justify-end"><Button onClick={saveContent} className="bg-bsv-red"><Save className="w-4 h-4 mr-1" />Save</Button></div>
                 <Card><CardContent className="p-5 space-y-3">
                   <h3 className="font-display font-bold text-lg text-bsv-blue">Footer Branding</h3>
-                  <div><Label>Tagline</Label><Input value={content.footer.tagline} onChange={e => setContent({...content, footer: {...content.footer, tagline: e.target.value}})} /></div>
-                  <div><Label>Description</Label><Textarea value={content.footer.description} onChange={e => setContent({...content, footer: {...content.footer, description: e.target.value}})} /></div>
-                  <div><Label>Copyright</Label><Input value={content.footer.copyright} onChange={e => setContent({...content, footer: {...content.footer, copyright: e.target.value}})} /></div>
+                  <div><Label>Tagline</Label><Input value={content.footer.tagline} onChange={e => setContent({ ...content, footer: { ...content.footer, tagline: e.target.value } })} /></div>
+                  <div><Label>Description</Label><Textarea value={content.footer.description} onChange={e => setContent({ ...content, footer: { ...content.footer, description: e.target.value } })} /></div>
+                  <div><Label>Copyright</Label><Input value={content.footer.copyright} onChange={e => setContent({ ...content, footer: { ...content.footer, copyright: e.target.value } })} /></div>
                 </CardContent></Card>
                 <Card><CardContent className="p-5">
                   <h3 className="font-display font-bold text-lg text-bsv-blue mb-3">Footer Columns</h3>
                   {content.footer.columns?.map((col, i) => (
                     <div key={i} className="border rounded p-3 mb-3">
-                      <Input value={col.title} className="font-bold mb-2" onChange={e => { const a=[...content.footer.columns]; a[i]={...a[i], title: e.target.value}; setContent({...content, footer: {...content.footer, columns: a}}) }} />
+                      <Input value={col.title} className="font-bold mb-2" onChange={e => { const a = [...content.footer.columns]; a[i] = { ...a[i], title: e.target.value }; setContent({ ...content, footer: { ...content.footer, columns: a } }) }} />
                       {col.links?.map((lnk, j) => (
                         <div key={j} className="flex gap-2 mb-1">
-                          <Input value={lnk.label} placeholder="Label" onChange={e => { const a=[...content.footer.columns]; a[i].links[j] = {...lnk, label: e.target.value}; setContent({...content, footer: {...content.footer, columns: a}}) }} />
-                          <Input value={lnk.url} placeholder="URL" onChange={e => { const a=[...content.footer.columns]; a[i].links[j] = {...lnk, url: e.target.value}; setContent({...content, footer: {...content.footer, columns: a}}) }} />
-                          <Button size="sm" variant="ghost" onClick={() => { const a=[...content.footer.columns]; a[i].links = a[i].links.filter((_, k) => k !== j); setContent({...content, footer: {...content.footer, columns: a}}) }}><Trash2 className="w-3 h-3" /></Button>
+                          <Input value={lnk.label} placeholder="Label" onChange={e => { const a = [...content.footer.columns]; a[i].links[j] = { ...lnk, label: e.target.value }; setContent({ ...content, footer: { ...content.footer, columns: a } }) }} />
+                          <Input value={lnk.url} placeholder="URL" onChange={e => { const a = [...content.footer.columns]; a[i].links[j] = { ...lnk, url: e.target.value }; setContent({ ...content, footer: { ...content.footer, columns: a } }) }} />
+                          <Button size="sm" variant="ghost" onClick={() => { const a = [...content.footer.columns]; a[i].links = a[i].links.filter((_, k) => k !== j); setContent({ ...content, footer: { ...content.footer, columns: a } }) }}><Trash2 className="w-3 h-3" /></Button>
                         </div>
                       ))}
-                      <Button size="sm" variant="outline" onClick={() => { const a=[...content.footer.columns]; a[i].links = [...(a[i].links||[]), {label: 'New', url: '#'}]; setContent({...content, footer: {...content.footer, columns: a}}) }}><Plus className="w-3 h-3 mr-1" />Add Link</Button>
+                      <Button size="sm" variant="outline" onClick={() => { const a = [...content.footer.columns]; a[i].links = [...(a[i].links || []), { label: 'New', url: '#' }]; setContent({ ...content, footer: { ...content.footer, columns: a } }) }}><Plus className="w-3 h-3 mr-1" />Add Link</Button>
                     </div>
                   ))}
-                  <Button size="sm" variant="outline" onClick={() => setContent({...content, footer: {...content.footer, columns: [...(content.footer.columns||[]), {title: 'New', links: []}]}})}><Plus className="w-3 h-3 mr-1" />Add Column</Button>
+                  <Button size="sm" variant="outline" onClick={() => setContent({ ...content, footer: { ...content.footer, columns: [...(content.footer.columns || []), { title: 'New', links: [] }] } })}><Plus className="w-3 h-3 mr-1" />Add Column</Button>
                 </CardContent></Card>
                 <Card><CardContent className="p-5 space-y-3">
                   <h3 className="font-display font-bold text-lg text-bsv-blue">Social Links</h3>
                   {Object.keys(content.footer.social || {}).map(k => (
-                    <div key={k}><Label className="capitalize">{k}</Label><Input value={content.footer.social[k]} onChange={e => setContent({...content, footer: {...content.footer, social: {...content.footer.social, [k]: e.target.value}}})} /></div>
+                    <div key={k}><Label className="capitalize">{k}</Label><Input value={content.footer.social[k]} onChange={e => setContent({ ...content, footer: { ...content.footer, social: { ...content.footer.social, [k]: e.target.value } } })} /></div>
                   ))}
                 </CardContent></Card>
               </div>
@@ -705,7 +783,7 @@ function MediaLibraryView({ media, token, reload }) {
           {m.contentType?.startsWith('image/') ? <img src={m.url} alt={m.alt} className="w-full h-32 object-cover" /> : <div className="w-full h-32 bg-slate-100 flex items-center justify-center"><FileText className="w-10 h-10 text-slate-400" /></div>}
           <div className="p-2">
             <div className="text-xs font-medium truncate">{m.title}</div>
-            <div className="text-[10px] text-muted-foreground">{(m.size/1024).toFixed(1)} KB</div>
+            <div className="text-[10px] text-muted-foreground">{(m.size / 1024).toFixed(1)} KB</div>
             <div className="flex gap-1 mt-1">
               <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(m.url); toast.success('URL copied') }}>Copy</Button>
               <Button size="sm" variant="ghost" onClick={() => del(m.id)}><Trash2 className="w-3 h-3 text-red-500" /></Button>
@@ -732,7 +810,7 @@ function ImpactStoriesView({ stories, api, reload }) {
   }
   return (
     <div className="space-y-3">
-      <div className="flex justify-between"><h3 className="font-display font-bold text-lg">Impact Stories ({stories.length})</h3><Button onClick={() => setEditing({title: '', description: '', category: 'General', state: '', beneficiary: '', ngo: '', published: false})} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />New Story</Button></div>
+      <div className="flex justify-between"><h3 className="font-display font-bold text-lg">Impact Stories ({stories.length})</h3><Button onClick={() => setEditing({ title: '', description: '', category: 'General', state: '', beneficiary: '', ngo: '', published: false })} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />New Story</Button></div>
       <div className="grid md:grid-cols-2 gap-3">{stories.map(s => (
         <Card key={s.id}><CardContent className="p-4">
           {s.heroImage && <img src={s.heroImage} alt="" className="w-full h-32 object-cover rounded mb-2" />}
@@ -747,20 +825,20 @@ function ImpactStoriesView({ stories, api, reload }) {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editing.id ? 'Edit' : 'New'} Impact Story</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Title</Label><Input value={editing.title} onChange={e => setEditing({...editing, title: e.target.value})} /></div>
-              <div><Label>Description</Label><Textarea rows={4} value={editing.description} onChange={e => setEditing({...editing, description: e.target.value})} /></div>
+              <div><Label>Title</Label><Input value={editing.title} onChange={e => setEditing({ ...editing, title: e.target.value })} /></div>
+              <div><Label>Description</Label><Textarea rows={4} value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} /></div>
               <div className="grid grid-cols-2 gap-2">
-                <div><Label>Category</Label><Input value={editing.category} onChange={e => setEditing({...editing, category: e.target.value})} /></div>
-                <div><Label>State</Label><Input value={editing.state} onChange={e => setEditing({...editing, state: e.target.value})} /></div>
-                <div><Label>Beneficiary</Label><Input value={editing.beneficiary} onChange={e => setEditing({...editing, beneficiary: e.target.value})} /></div>
-                <div><Label>NGO</Label><Input value={editing.ngo} onChange={e => setEditing({...editing, ngo: e.target.value})} /></div>
+                <div><Label>Category</Label><Input value={editing.category} onChange={e => setEditing({ ...editing, category: e.target.value })} /></div>
+                <div><Label>State</Label><Input value={editing.state} onChange={e => setEditing({ ...editing, state: e.target.value })} /></div>
+                <div><Label>Beneficiary</Label><Input value={editing.beneficiary} onChange={e => setEditing({ ...editing, beneficiary: e.target.value })} /></div>
+                <div><Label>NGO</Label><Input value={editing.ngo} onChange={e => setEditing({ ...editing, ngo: e.target.value })} /></div>
               </div>
-              <MediaPicker label="Hero Image" value={editing.heroImage} onChange={v => setEditing({...editing, heroImage: v})} />
-              <MediaPicker label="Before Image" value={editing.beforeImage} onChange={v => setEditing({...editing, beforeImage: v})} />
-              <MediaPicker label="After Image" value={editing.afterImage} onChange={v => setEditing({...editing, afterImage: v})} />
-              <MultiMediaPicker label="Story Gallery (multiple images)" values={editing.gallery || []} onChange={v => setEditing({...editing, gallery: v})} max={30} />
-              <div><Label>Video URL</Label><Input value={editing.video || ''} onChange={e => setEditing({...editing, video: e.target.value})} /></div>
-              <div className="flex items-center gap-2"><Switch checked={editing.published} onCheckedChange={c => setEditing({...editing, published: c})} /><Label>Published</Label></div>
+              <MediaPicker label="Hero Image" value={editing.heroImage} onChange={v => setEditing({ ...editing, heroImage: v })} />
+              <MediaPicker label="Before Image" value={editing.beforeImage} onChange={v => setEditing({ ...editing, beforeImage: v })} />
+              <MediaPicker label="After Image" value={editing.afterImage} onChange={v => setEditing({ ...editing, afterImage: v })} />
+              <MultiMediaPicker label="Story Gallery (multiple images)" values={editing.gallery || []} onChange={v => setEditing({ ...editing, gallery: v })} max={30} />
+              <div><Label>Video URL</Label><Input value={editing.video || ''} onChange={e => setEditing({ ...editing, video: e.target.value })} /></div>
+              <div className="flex items-center gap-2"><Switch checked={editing.published} onCheckedChange={c => setEditing({ ...editing, published: c })} /><Label>Published</Label></div>
               <Button onClick={save} className="w-full bg-bsv-red">Save</Button>
             </div>
           </DialogContent>
@@ -782,7 +860,7 @@ function NgosView({ ngos, api, reload }) {
   const del = async (id) => { if (confirm('Delete?')) { await api(`/api/ngos/${id}`, 'DELETE'); reload() } }
   return (
     <div className="space-y-3">
-      <div className="flex justify-between"><h3 className="font-display font-bold text-lg">NGO Network ({ngos.length})</h3><Button onClick={() => setEditing({name: '', description: '', logo: '', website: '', email: '', phone: '', stateCoverage: [], published: true})} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />New NGO</Button></div>
+      <div className="flex justify-between"><h3 className="font-display font-bold text-lg">NGO Network ({ngos.length})</h3><Button onClick={() => setEditing({ name: '', description: '', logo: '', website: '', email: '', phone: '', stateCoverage: [], published: true })} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />New NGO</Button></div>
       <div className="grid md:grid-cols-2 gap-3">{ngos.map(n => (
         <Card key={n.id}><CardContent className="p-4 flex gap-3">
           {n.logo && <img src={n.logo} alt="" className="w-16 h-16 object-cover rounded" />}
@@ -798,16 +876,16 @@ function NgosView({ ngos, api, reload }) {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editing.id ? 'Edit' : 'New'} NGO</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Name</Label><Input value={editing.name} onChange={e => setEditing({...editing, name: e.target.value})} /></div>
-              <MediaPicker label="Logo" value={editing.logo} onChange={v => setEditing({...editing, logo: v})} />
-              <div><Label>Description</Label><Textarea rows={3} value={editing.description} onChange={e => setEditing({...editing, description: e.target.value})} /></div>
+              <div><Label>Name</Label><Input value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} /></div>
+              <MediaPicker label="Logo" value={editing.logo} onChange={v => setEditing({ ...editing, logo: v })} />
+              <div><Label>Description</Label><Textarea rows={3} value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} /></div>
               <div className="grid grid-cols-2 gap-2">
-                <div><Label>Website</Label><Input value={editing.website} onChange={e => setEditing({...editing, website: e.target.value})} /></div>
-                <div><Label>Email</Label><Input value={editing.email} onChange={e => setEditing({...editing, email: e.target.value})} /></div>
-                <div><Label>Phone</Label><Input value={editing.phone} onChange={e => setEditing({...editing, phone: e.target.value})} /></div>
-                <div><Label>State Coverage (comma-separated)</Label><Input value={(editing.stateCoverage || []).join(', ')} onChange={e => setEditing({...editing, stateCoverage: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})} /></div>
+                <div><Label>Website</Label><Input value={editing.website} onChange={e => setEditing({ ...editing, website: e.target.value })} /></div>
+                <div><Label>Email</Label><Input value={editing.email} onChange={e => setEditing({ ...editing, email: e.target.value })} /></div>
+                <div><Label>Phone</Label><Input value={editing.phone} onChange={e => setEditing({ ...editing, phone: e.target.value })} /></div>
+                <div><Label>State Coverage (comma-separated)</Label><Input value={(editing.stateCoverage || []).join(', ')} onChange={e => setEditing({ ...editing, stateCoverage: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} /></div>
               </div>
-              <div className="flex items-center gap-2"><Switch checked={editing.published} onCheckedChange={c => setEditing({...editing, published: c})} /><Label>Published</Label></div>
+              <div className="flex items-center gap-2"><Switch checked={editing.published} onCheckedChange={c => setEditing({ ...editing, published: c })} /><Label>Published</Label></div>
               <Button onClick={save} className="w-full bg-bsv-red">Save</Button>
             </div>
           </DialogContent>
@@ -828,7 +906,7 @@ function ReportsView({ reports, api, reload }) {
   const del = async (id) => { if (confirm('Delete?')) { await api(`/api/reports/${id}`, 'DELETE'); reload() } }
   return (
     <div className="space-y-3">
-      <div className="flex justify-between"><h3 className="font-display font-bold text-lg">Reports & Publications ({reports.length})</h3><Button onClick={() => setEditing({title: '', category: 'Annual Report', description: '', published: true, language: 'en'})} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />New Report</Button></div>
+      <div className="flex justify-between"><h3 className="font-display font-bold text-lg">Reports & Publications ({reports.length})</h3><Button onClick={() => setEditing({ title: '', category: 'Annual Report', description: '', published: true, language: 'en' })} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />New Report</Button></div>
       <div className="grid md:grid-cols-3 gap-3">{reports.map(r => (
         <Card key={r.id}><CardContent className="p-4">
           {r.thumbnail && <img src={r.thumbnail} alt="" className="w-full h-32 object-cover rounded mb-2" />}
@@ -842,12 +920,12 @@ function ReportsView({ reports, api, reload }) {
           <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editing.id ? 'Edit' : 'New'} Report</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Title</Label><Input value={editing.title} onChange={e => setEditing({...editing, title: e.target.value})} /></div>
-              <div><Label>Category</Label><Select value={editing.category} onValueChange={v => setEditing({...editing, category: v})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['Annual Report','Campaign Report','Awareness Report','NGO Report','Research Publication','Whitepaper','Impact Assessment'].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
-              <div><Label>Description</Label><Textarea rows={3} value={editing.description} onChange={e => setEditing({...editing, description: e.target.value})} /></div>
-              <MediaPicker label="Thumbnail" value={editing.thumbnail} onChange={v => setEditing({...editing, thumbnail: v})} />
-              <MediaPicker label="PDF File" value={editing.file} onChange={v => setEditing({...editing, file: v})} />
-              <div className="flex items-center gap-2"><Switch checked={editing.published} onCheckedChange={c => setEditing({...editing, published: c})} /><Label>Published</Label></div>
+              <div><Label>Title</Label><Input value={editing.title} onChange={e => setEditing({ ...editing, title: e.target.value })} /></div>
+              <div><Label>Category</Label><Select value={editing.category} onValueChange={v => setEditing({ ...editing, category: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['Annual Report', 'Campaign Report', 'Awareness Report', 'NGO Report', 'Research Publication', 'Whitepaper', 'Impact Assessment'].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+              <div><Label>Description</Label><Textarea rows={3} value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} /></div>
+              <MediaPicker label="Thumbnail" value={editing.thumbnail} onChange={v => setEditing({ ...editing, thumbnail: v })} />
+              <MediaPicker label="PDF File" value={editing.file} onChange={v => setEditing({ ...editing, file: v })} />
+              <div className="flex items-center gap-2"><Switch checked={editing.published} onCheckedChange={c => setEditing({ ...editing, published: c })} /><Label>Published</Label></div>
               <Button onClick={save} className="w-full bg-bsv-red">Save</Button>
             </div>
           </DialogContent>
@@ -859,7 +937,7 @@ function ReportsView({ reports, api, reload }) {
 
 function UsersView({ users, api, reload }) {
   const [editing, setEditing] = useState(null)
-  const roles = ['super_admin','content_admin','campaign_manager','regional_manager','media_manager','lead_manager']
+  const roles = ['super_admin', 'content_admin', 'campaign_manager', 'regional_manager', 'media_manager', 'lead_manager']
   const save = async () => {
     if (editing.id) await api(`/api/users/${editing.id}`, 'PATCH', { name: editing.name, role: editing.role, active: editing.active, ...(editing.password ? { password: editing.password } : {}) })
     else await api('/api/users', 'POST', editing)
@@ -868,7 +946,7 @@ function UsersView({ users, api, reload }) {
   const del = async (id) => { if (confirm('Delete user?')) { await api(`/api/users/${id}`, 'DELETE'); reload() } }
   return (
     <Card><CardContent className="p-5">
-      <div className="flex justify-between mb-3"><h3 className="font-display font-bold text-lg">User Accounts ({users.length})</h3><Button onClick={() => setEditing({email: '', password: '', name: '', role: 'content_admin', active: true})} className="bg-bsv-red"><UserPlus className="w-4 h-4 mr-1" />New User</Button></div>
+      <div className="flex justify-between mb-3"><h3 className="font-display font-bold text-lg">User Accounts ({users.length})</h3><Button onClick={() => setEditing({ email: '', password: '', name: '', role: 'content_admin', active: true })} className="bg-bsv-red"><UserPlus className="w-4 h-4 mr-1" />New User</Button></div>
       <table className="w-full text-sm">
         <thead><tr className="border-b text-left"><th className="p-2">Name</th><th className="p-2">Email</th><th className="p-2">Role</th><th className="p-2">Status</th><th className="p-2">Actions</th></tr></thead>
         <tbody>{users.map(u => (
@@ -885,11 +963,11 @@ function UsersView({ users, api, reload }) {
           <DialogContent>
             <DialogHeader><DialogTitle>{editing.id ? 'Edit' : 'New'} User</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Name</Label><Input value={editing.name} onChange={e => setEditing({...editing, name: e.target.value})} /></div>
-              <div><Label>Email</Label><Input value={editing.email} disabled={!!editing.id} onChange={e => setEditing({...editing, email: e.target.value})} /></div>
-              <div><Label>{editing.id ? 'New Password (leave empty to keep)' : 'Password'}</Label><Input type="password" value={editing.password || ''} onChange={e => setEditing({...editing, password: e.target.value})} /></div>
-              <div><Label>Role</Label><Select value={editing.role} onValueChange={v => setEditing({...editing, role: v})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{roles.map(r => <SelectItem key={r} value={r}>{r.replace('_', ' ')}</SelectItem>)}</SelectContent></Select></div>
-              <div className="flex items-center gap-2"><Switch checked={editing.active !== false} onCheckedChange={c => setEditing({...editing, active: c})} /><Label>Active</Label></div>
+              <div><Label>Name</Label><Input value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} /></div>
+              <div><Label>Email</Label><Input value={editing.email} disabled={!!editing.id} onChange={e => setEditing({ ...editing, email: e.target.value })} /></div>
+              <div><Label>{editing.id ? 'New Password (leave empty to keep)' : 'Password'}</Label><Input type="password" value={editing.password || ''} onChange={e => setEditing({ ...editing, password: e.target.value })} /></div>
+              <div><Label>Role</Label><Select value={editing.role} onValueChange={v => setEditing({ ...editing, role: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{roles.map(r => <SelectItem key={r} value={r}>{r.replace('_', ' ')}</SelectItem>)}</SelectContent></Select></div>
+              <div className="flex items-center gap-2"><Switch checked={editing.active !== false} onCheckedChange={c => setEditing({ ...editing, active: c })} /><Label>Active</Label></div>
               <Button onClick={save} className="w-full bg-bsv-red">Save</Button>
             </div>
           </DialogContent>
@@ -918,7 +996,7 @@ function VideosView({ api, token, reload }) {
   const del = async (id) => { if (confirm('Delete?')) { await api(`/api/videos/${id}`, 'DELETE'); load() } }
   return (
     <div className="space-y-3">
-      <div className="flex justify-between"><h3 className="font-display font-bold text-lg">Videos ({videos.length})</h3><Button onClick={() => setEditing({title: '', url: '', description: '', category: 'Campaign', featured: false, published: true, order: 0})} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />New Video</Button></div>
+      <div className="flex justify-between"><h3 className="font-display font-bold text-lg">Videos ({videos.length})</h3><Button onClick={() => setEditing({ title: '', url: '', description: '', category: 'Campaign', featured: false, published: true, order: 0 })} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />New Video</Button></div>
       <div className="grid md:grid-cols-3 gap-3">{videos.map(v => (
         <Card key={v.id}><CardContent className="p-4">
           {v.thumbnail && <img src={v.thumbnail} alt="" className="w-full h-32 object-cover rounded mb-2" />}
@@ -932,15 +1010,15 @@ function VideosView({ api, token, reload }) {
           <DialogContent>
             <DialogHeader><DialogTitle>{editing.id ? 'Edit' : 'New'} Video</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Title</Label><Input value={editing.title} onChange={e => setEditing({...editing, title: e.target.value})} /></div>
-              <div><Label>YouTube URL</Label><Input value={editing.url} onChange={e => setEditing({...editing, url: e.target.value})} placeholder="https://www.youtube.com/watch?v=..." /></div>
-              <div><Label>Description</Label><Textarea rows={2} value={editing.description} onChange={e => setEditing({...editing, description: e.target.value})} /></div>
-              <div><Label>Category</Label><Select value={editing.category} onValueChange={v => setEditing({...editing, category: v})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['Campaign','Vox Pop','KOL','NGO Activity','Influencer','Myth Busting','Awareness'].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+              <div><Label>Title</Label><Input value={editing.title} onChange={e => setEditing({ ...editing, title: e.target.value })} /></div>
+              <div><Label>YouTube URL</Label><Input value={editing.url} onChange={e => setEditing({ ...editing, url: e.target.value })} placeholder="https://www.youtube.com/watch?v=..." /></div>
+              <div><Label>Description</Label><Textarea rows={2} value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} /></div>
+              <div><Label>Category</Label><Select value={editing.category} onValueChange={v => setEditing({ ...editing, category: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['Campaign', 'Vox Pop', 'KOL', 'NGO Activity', 'Influencer', 'Myth Busting', 'Awareness'].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Order</Label><Input type="number" value={editing.order} onChange={e => setEditing({...editing, order: parseInt(e.target.value)||0})} /></div>
-                <div className="flex items-center gap-2 pt-6"><Switch checked={editing.featured} onCheckedChange={c => setEditing({...editing, featured: c})} /><Label>Featured</Label></div>
+                <div><Label>Order</Label><Input type="number" value={editing.order} onChange={e => setEditing({ ...editing, order: parseInt(e.target.value) || 0 })} /></div>
+                <div className="flex items-center gap-2 pt-6"><Switch checked={editing.featured} onCheckedChange={c => setEditing({ ...editing, featured: c })} /><Label>Featured</Label></div>
               </div>
-              <div className="flex items-center gap-2"><Switch checked={editing.published} onCheckedChange={c => setEditing({...editing, published: c})} /><Label>Published</Label></div>
+              <div className="flex items-center gap-2"><Switch checked={editing.published} onCheckedChange={c => setEditing({ ...editing, published: c })} /><Label>Published</Label></div>
               <Button onClick={save} className="w-full bg-bsv-red">Save</Button>
             </div>
           </DialogContent>
@@ -1188,7 +1266,7 @@ function TranslationsView({ api, content, setContent }) {
     if (!obj) return
     if (typeof obj === 'string') { if (obj.trim() && !obj.startsWith('http') && !obj.startsWith('#')) flatPairs.push(prefix); return }
     if (Array.isArray(obj)) { obj.forEach((v, i) => flatten(v, `${prefix}[${i}]`)); return }
-    if (typeof obj === 'object') Object.entries(obj).forEach(([k, v]) => { if (['id','icon','image','preview','file','url','logo','thumbnail','social','translations','translationStatus','sections'].includes(k)) return; flatten(v, prefix ? `${prefix}.${k}` : k) })
+    if (typeof obj === 'object') Object.entries(obj).forEach(([k, v]) => { if (['id', 'icon', 'image', 'preview', 'file', 'url', 'logo', 'thumbnail', 'social', 'translations', 'translationStatus', 'sections'].includes(k)) return; flatten(v, prefix ? `${prefix}.${k}` : k) })
   }
   if (content) { flatten(content.hero, 'hero'); flatten(content.about, 'about'); flatten(content.emergencyDos, 'emergencyDos'); flatten(content.emergencyDonts, 'emergencyDonts'); flatten(content.myths, 'myths'); flatten(content.resources, 'resources'); flatten(content.impactStats, 'impactStats'); flatten(content.footer, 'footer') }
 
@@ -1196,7 +1274,7 @@ function TranslationsView({ api, content, setContent }) {
     if (!obj) return ''
     const parts = path.split(/\.|\[|\]/).filter(Boolean)
     let cur = obj
-    for (const p of parts) { cur = cur?.[/^\d+$/.test(p) ? parseInt(p,10) : p]; if (cur === undefined) return '' }
+    for (const p of parts) { cur = cur?.[/^\d+$/.test(p) ? parseInt(p, 10) : p]; if (cur === undefined) return '' }
     return cur ?? ''
   }
 
@@ -1298,7 +1376,7 @@ function DictionaryView({ api }) {
   return (
     <div className="space-y-4">
       <div><h2 className="font-display font-extrabold text-2xl text-bsv-blue mb-1">Medical Terminology Dictionary</h2><p className="text-sm text-muted-foreground">Standardized translations for medical/snakebite terms. AI translator uses these for consistency across all content.</p></div>
-      <div className="flex justify-between gap-3"><Input placeholder="Search terms or category..." value={filter} onChange={e => setFilter(e.target.value)} className="max-w-sm" /><Button onClick={() => setEditing({term: '', category: 'medical', definition: '', doNotTranslate: false, translations: {}})} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />Add Term</Button></div>
+      <div className="flex justify-between gap-3"><Input placeholder="Search terms or category..." value={filter} onChange={e => setFilter(e.target.value)} className="max-w-sm" /><Button onClick={() => setEditing({ term: '', category: 'medical', definition: '', doNotTranslate: false, translations: {} })} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />Add Term</Button></div>
       <Card><CardContent className="p-5">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -1322,16 +1400,16 @@ function DictionaryView({ api }) {
             <DialogHeader><DialogTitle>{editing.id ? 'Edit' : 'New'} Medical Term</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Term (English)</Label><Input value={editing.term} onChange={e => setEditing({...editing, term: e.target.value})} /></div>
-                <div><Label>Category</Label><Select value={editing.category} onValueChange={v => setEditing({...editing, category: v})}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['medical','abbreviation','snake_species','drug','procedure','organization','general'].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+                <div><Label>Term (English)</Label><Input value={editing.term} onChange={e => setEditing({ ...editing, term: e.target.value })} /></div>
+                <div><Label>Category</Label><Select value={editing.category} onValueChange={v => setEditing({ ...editing, category: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['medical', 'abbreviation', 'snake_species', 'drug', 'procedure', 'organization', 'general'].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
               </div>
-              <div><Label>Definition / Notes</Label><Textarea rows={2} value={editing.definition} onChange={e => setEditing({...editing, definition: e.target.value})} /></div>
-              <div className="flex items-center gap-2"><Switch checked={editing.doNotTranslate} onCheckedChange={c => setEditing({...editing, doNotTranslate: c})} /><Label>Do not translate (use as-is, e.g. abbreviations like ASV, PHC)</Label></div>
+              <div><Label>Definition / Notes</Label><Textarea rows={2} value={editing.definition} onChange={e => setEditing({ ...editing, definition: e.target.value })} /></div>
+              <div className="flex items-center gap-2"><Switch checked={editing.doNotTranslate} onCheckedChange={c => setEditing({ ...editing, doNotTranslate: c })} /><Label>Do not translate (use as-is, e.g. abbreviations like ASV, PHC)</Label></div>
               {!editing.doNotTranslate && (
                 <div className="space-y-2">
                   <Label>Per-Language Translations</Label>
                   {LANG_INFO.map(l => (
-                    <div key={l.code} className="flex gap-2 items-center"><div className="w-32 text-xs font-medium">{l.native} ({l.label})</div><Input value={editing.translations?.[l.code] || ''} onChange={e => setEditing({...editing, translations: {...(editing.translations||{}), [l.code]: e.target.value}})} /></div>
+                    <div key={l.code} className="flex gap-2 items-center"><div className="w-32 text-xs font-medium">{l.native} ({l.label})</div><Input value={editing.translations?.[l.code] || ''} onChange={e => setEditing({ ...editing, translations: { ...(editing.translations || {}), [l.code]: e.target.value } })} /></div>
                   ))}
                 </div>
               )}
@@ -1377,12 +1455,12 @@ function SettingsView({ api }) {
 
   if (!s) return <p className="text-muted-foreground">Loading settings...</p>
 
-  const updateBranding = (k, v) => setS({...s, branding: {...s.branding, [k]: v}})
-  const updateSEO = (k, v) => setS({...s, seoHome: {...s.seoHome, [k]: v}})
-  const updateContact = (k, v) => setS({...s, contact: {...s.contact, [k]: v}})
-  const updateSocial = (k, v) => setS({...s, social: {...s.social, [k]: v}})
-  const updateTracking = (k, v) => setS({...s, tracking: {...s.tracking, [k]: v}})
-  const updateAdvanced = (k, v) => setS({...s, advanced: {...s.advanced, [k]: v}})
+  const updateBranding = (k, v) => setS({ ...s, branding: { ...s.branding, [k]: v } })
+  const updateSEO = (k, v) => setS({ ...s, seoHome: { ...s.seoHome, [k]: v } })
+  const updateContact = (k, v) => setS({ ...s, contact: { ...s.contact, [k]: v } })
+  const updateSocial = (k, v) => setS({ ...s, social: { ...s.social, [k]: v } })
+  const updateTracking = (k, v) => setS({ ...s, tracking: { ...s.tracking, [k]: v } })
+  const updateAdvanced = (k, v) => setS({ ...s, advanced: { ...s.advanced, [k]: v } })
 
   const sections = [
     { id: 'branding', label: 'Branding', icon: ImageIcon },
@@ -1490,7 +1568,7 @@ function SettingsView({ api }) {
               <div><Label>Meta Keywords</Label><Input value={s.seoHome.metaKeywords} onChange={e => updateSEO('metaKeywords', e.target.value)} /></div>
               <div className="grid md:grid-cols-2 gap-3">
                 <div><Label>Canonical URL</Label><Input value={s.seoHome.canonicalUrl} onChange={e => updateSEO('canonicalUrl', e.target.value)} placeholder="https://bsvindia.com/" /></div>
-                <div><Label>Robots</Label><Select value={s.seoHome.robots} onValueChange={v => updateSEO('robots', v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['index, follow','noindex, nofollow','index, nofollow','noindex, follow'].map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select></div>
+                <div><Label>Robots</Label><Select value={s.seoHome.robots} onValueChange={v => updateSEO('robots', v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['index, follow', 'noindex, nofollow', 'index, nofollow', 'noindex, follow'].map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select></div>
               </div>
               <hr className="my-3" />
               <h4 className="font-display font-bold text-sm text-bsv-blue">Open Graph (Facebook, LinkedIn, WhatsApp)</h4>
@@ -1499,7 +1577,7 @@ function SettingsView({ api }) {
               <MediaPicker label="OG Image (1200x630 recommended)" value={s.seoHome.ogImage} onChange={v => updateSEO('ogImage', v)} />
               <hr className="my-3" />
               <h4 className="font-display font-bold text-sm text-bsv-blue">Twitter / X Card</h4>
-              <div><Label>Twitter Card Type</Label><Select value={s.seoHome.twitterCardType} onValueChange={v => updateSEO('twitterCardType', v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['summary','summary_large_image','app','player'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select></div>
+              <div><Label>Twitter Card Type</Label><Select value={s.seoHome.twitterCardType} onValueChange={v => updateSEO('twitterCardType', v)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['summary', 'summary_large_image', 'app', 'player'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select></div>
               <div><Label>Twitter Title</Label><Input value={s.seoHome.twitterTitle} onChange={e => updateSEO('twitterTitle', e.target.value)} /></div>
               <div><Label>Twitter Description</Label><Textarea rows={2} value={s.seoHome.twitterDescription} onChange={e => updateSEO('twitterDescription', e.target.value)} /></div>
               <MediaPicker label="Twitter Image" value={s.seoHome.twitterImage} onChange={v => updateSEO('twitterImage', v)} />
@@ -1514,14 +1592,14 @@ function SettingsView({ api }) {
                 <details key={key} className="border rounded p-3 mb-2">
                   <summary className="font-medium cursor-pointer capitalize">{key.replace('_', ' ')} <span className="text-xs text-muted-foreground">({page.slug})</span></summary>
                   <div className="space-y-2 mt-3">
-                    <div><Label className="text-xs">Slug</Label><Input value={page.slug} onChange={e => setS({...s, perPage: {...s.perPage, [key]: {...page, slug: e.target.value}}})} /></div>
-                    <div><Label className="text-xs">Meta Title</Label><Input value={page.metaTitle} onChange={e => setS({...s, perPage: {...s.perPage, [key]: {...page, metaTitle: e.target.value}}})} /></div>
-                    <div><Label className="text-xs">Meta Description</Label><Textarea rows={2} value={page.metaDescription} onChange={e => setS({...s, perPage: {...s.perPage, [key]: {...page, metaDescription: e.target.value}}})} /></div>
+                    <div><Label className="text-xs">Slug</Label><Input value={page.slug} onChange={e => setS({ ...s, perPage: { ...s.perPage, [key]: { ...page, slug: e.target.value } } })} /></div>
+                    <div><Label className="text-xs">Meta Title</Label><Input value={page.metaTitle} onChange={e => setS({ ...s, perPage: { ...s.perPage, [key]: { ...page, metaTitle: e.target.value } } })} /></div>
+                    <div><Label className="text-xs">Meta Description</Label><Textarea rows={2} value={page.metaDescription} onChange={e => setS({ ...s, perPage: { ...s.perPage, [key]: { ...page, metaDescription: e.target.value } } })} /></div>
                     <div className="grid grid-cols-2 gap-2">
-                      <div><Label className="text-xs">OG Title</Label><Input value={page.ogTitle || ''} onChange={e => setS({...s, perPage: {...s.perPage, [key]: {...page, ogTitle: e.target.value}}})} /></div>
-                      <div><Label className="text-xs">Schema Type</Label><Input value={page.schemaType} onChange={e => setS({...s, perPage: {...s.perPage, [key]: {...page, schemaType: e.target.value}}})} /></div>
+                      <div><Label className="text-xs">OG Title</Label><Input value={page.ogTitle || ''} onChange={e => setS({ ...s, perPage: { ...s.perPage, [key]: { ...page, ogTitle: e.target.value } } })} /></div>
+                      <div><Label className="text-xs">Schema Type</Label><Input value={page.schemaType} onChange={e => setS({ ...s, perPage: { ...s.perPage, [key]: { ...page, schemaType: e.target.value } } })} /></div>
                     </div>
-                    <MediaPicker label="OG Image" value={page.ogImage} onChange={v => setS({...s, perPage: {...s.perPage, [key]: {...page, ogImage: v}}})} />
+                    <MediaPicker label="OG Image" value={page.ogImage} onChange={v => setS({ ...s, perPage: { ...s.perPage, [key]: { ...page, ogImage: v } } })} />
                   </div>
                 </details>
               ))}
@@ -1587,7 +1665,7 @@ function SettingsView({ api }) {
           {section === 'redirects' && (
             <Card><CardContent className="p-5 space-y-3">
               <h3 className="font-display font-bold text-lg text-bsv-blue">301 Redirects</h3>
-              <div className="flex gap-2"><Input placeholder="From path /old-url" value={newRedirect.from} onChange={e => setNewRedirect({...newRedirect, from: e.target.value})} /><Input placeholder="To URL /new-url" value={newRedirect.to} onChange={e => setNewRedirect({...newRedirect, to: e.target.value})} /><Button onClick={addRedirect} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />Add</Button></div>
+              <div className="flex gap-2"><Input placeholder="From path /old-url" value={newRedirect.from} onChange={e => setNewRedirect({ ...newRedirect, from: e.target.value })} /><Input placeholder="To URL /new-url" value={newRedirect.to} onChange={e => setNewRedirect({ ...newRedirect, to: e.target.value })} /><Button onClick={addRedirect} className="bg-bsv-red"><Plus className="w-4 h-4 mr-1" />Add</Button></div>
               <table className="w-full text-sm">
                 <thead><tr className="border-b text-left"><th className="p-2">From</th><th className="p-2">To</th><th className="p-2">Hits</th><th className="p-2"></th></tr></thead>
                 <tbody>{redirects.map(r => (
