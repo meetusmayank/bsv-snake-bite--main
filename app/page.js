@@ -279,15 +279,16 @@ function Header({ lang, setLang, t }) {
               className="h-10 sm:h-14 md:h-16 w-auto flex-shrink-0"
               draggable={false}
             />
-            <div className="hidden sm:block leading-tight text-left min-w-0">
+            <div className="leading-tight text-left min-w-0">
               <div
-                className="font-display font-semibold text-[9px] sm:text-sm leading-tight"
+                className="font-display font-semibold text-[10px] sm:text-sm leading-none"
                 style={{ color: BRAND.blue }}
               >
                 BSV Campaign
               </div>
+
               <div
-                className="hidden sm:block text-[11px] font-medium"
+                className="text-[7px] sm:text-[11px] font-medium leading-none mt-0.5 truncate"
                 style={{ color: BRAND.blue }}
               >
                 Saap Ka Vaar, Aspataal Mein Hi Upchaar
