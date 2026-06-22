@@ -1181,8 +1181,8 @@ function App() {
         <div className="flex items-center gap-3">
           <img
             src={settings?.branding?.headerLogo}
-            alt="BSV"
-            className="h-10 sm:h-14 md:h-16 w-auto flex-shrink-0"
+            alt="BSV Mankind"
+            className="h-24 md:h-28 w-auto mx-auto mb-4"
           />
         </div>
 
