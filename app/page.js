@@ -270,30 +270,18 @@ function Header({ lang, setLang, t, settings }) {
           {/* Logo - Original + Tagline same color as brand */}
           <button
             onClick={() => go('#home')}
-            className="flex items-center gap-2 transition-transform duration-300 max-w-[72%] sm:max-w-none"
+            className="flex items-center gap-2 flex-1 min-w-0"
             style={{ transform: open ? 'scale(0.95)' : 'scale(1)' }}
           >
             <img
-              src={settings?.branding?.headerLogo}
-              alt="BSV Mankind"
-              className="h-10 sm:h-14 md:h-16 w-auto flex-shrink-0"
+              src={settings?.branding?.bsvLogo}
+              alt="BSV"
+              className="h-8 sm:h-12 md:h-14 w-auto flex-shrink-0"
               draggable={false}
             />
-            <div className="leading-tight text-left min-w-0">
-              <div
-                className="font-display font-semibold text-[10px] sm:text-sm leading-none"
-                style={{ color: BRAND.blue }}
-              >
-                BSV Campaign
-              </div>
 
-              <div
-                className="text-[7px] sm:text-[11px] font-medium leading-tight mt-0.5"
-                style={{ color: BRAND.blue }}
-              >
-                <span className="block sm:inline">Saap Ka Vaar,</span>
-                <span className="block sm:inline"> Aspataal Mein Hi Upchaar</span>
-              </div>
+            <div className="min-w-0 flex-1">
+              {/* Tagline baad me yahan rahegi */}
             </div>
           </button>
 
@@ -338,6 +326,12 @@ function Header({ lang, setLang, t, settings }) {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
+            <img
+              src={settings?.branding?.mankindLogo}
+              alt="Mankind" 
+              className="h-8 sm:h-10 md:h-12 w-auto flex-shrink-0"
+              draggable={false}
+            />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -483,8 +477,8 @@ function Hero({ content, t }) {
 
   const slides = Array.isArray(content?.heroSlides)
     ? content.heroSlides
-        .filter(slide => slide?.image && slide.active !== false)
-        .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0))
+      .filter(slide => (slide?.desktopImage || slide?.mobileImage) && slide.active !== false)
+      .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0))
     : []
 
   const sliderRef = useRef(null)
@@ -552,11 +546,18 @@ function Hero({ content, t }) {
                   data-hero-card
                   className="relative w-[82vw] sm:w-[46vw] lg:w-[47vw] h-[260px] sm:h-[320px] lg:h-[360px] overflow-hidden rounded-[1.5rem] shadow-xl bg-white flex-shrink-0"
                 >
-                  <img
-                    src={slide.image}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
+                  <picture>
+                    <source
+                      media="(max-width: 768px)"
+                      srcSet={slide.mobileImage || slide.desktopImage}
+                    />
+
+                    <img
+                      src={slide.desktopImage || slide.mobileImage}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  </picture>
                 </div>
               ))}
             </div>
@@ -582,11 +583,10 @@ function Hero({ content, t }) {
                   key={i}
                   type="button"
                   onClick={() => scrollToSlide(i)}
-                  className={`h-2 rounded-full transition-all ${
-                    i === activeSlide
-                      ? 'w-8 bg-bsv-red'
-                      : 'w-2 bg-slate-300'
-                  }`}
+                  className={`h-2 rounded-full transition-all ${i === activeSlide
+                    ? 'w-8 bg-bsv-red'
+                    : 'w-2 bg-slate-300'
+                    }`}
                 />
               ))}
             </div>
@@ -1173,11 +1173,13 @@ function App() {
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="text-center" style={{ color: BRAND.blue }}>
-        <img
-          src={settings?.branding?.headerLogo}
-          alt="BSV Mankind"
-          className="h-24 md:h-28 w-auto mx-auto mb-4"
-        />
+        <div className="flex items-center gap-3">
+          <img
+            src={settings?.branding?.headerLogo}
+            alt="BSV"
+            className="h-10 sm:h-14 md:h-16 w-auto flex-shrink-0"
+          />
+        </div>
 
         <div className="font-display font-semibold text-xl">
           Saap Ka Vaar, Aspataal Mein Hi Upchaar
