@@ -346,7 +346,8 @@ export default function AdminPage() {
       ...slides,
       {
         id: `hero-${Date.now()}`,
-        image: '',
+        desktopImage: '',
+        mobileImage: '',
         order: nextOrder,
         active: true,
       },
@@ -559,11 +560,19 @@ export default function AdminPage() {
                             </div>
                           </div>
 
-                          <MediaPicker
-                            label="Slide Image"
-                            value={slide.image || ''}
-                            onChange={v => updateHeroSlide(slide.id, { image: v })}
-                          />
+                          <div className="grid md:grid-cols-2 gap-3">
+                            <MediaPicker
+                              label="Desktop Image (1920 × 1080)"
+                              value={slide.desktopImage || ''}
+                              onChange={v => updateHeroSlide(slide.id, { desktopImage: v })}
+                            />
+
+                            <MediaPicker
+                              label="Mobile Image (1200 × 1500)"
+                              value={slide.mobileImage || ''}
+                              onChange={v => updateHeroSlide(slide.id, { mobileImage: v })}
+                            />
+                          </div>
 
                           <div className="max-w-xs">
                             <Label>Sort Order</Label>
@@ -1560,6 +1569,8 @@ function SettingsView({ api }) {
                 <div className="md:col-span-2"><Label>Tagline</Label><Input value={s.branding.tagline} onChange={e => updateBranding('tagline', e.target.value)} /></div>
               </div>
               <MediaPicker label="Header Logo (light backgrounds)" value={s.branding.headerLogo} onChange={v => updateBranding('headerLogo', v)} />
+              <MediaPicker label="BSV Logo" value={s.branding.bsvLogo || ''} onChange={v => updateBranding('bsvLogo', v)} />
+              <MediaPicker label="Mankind Logo" value={s.branding.mankindLogo || ''} onChange={v => updateBranding('mankindLogo', v)} />
               <MediaPicker label="Footer Logo" value={s.branding.footerLogo} onChange={v => updateBranding('footerLogo', v)} />
               <MediaPicker label="Favicon (32x32 ICO/PNG)" value={s.branding.favicon} onChange={v => updateBranding('favicon', v)} />
               <MediaPicker label="Apple Touch Icon (180x180)" value={s.branding.appleTouchIcon} onChange={v => updateBranding('appleTouchIcon', v)} />
