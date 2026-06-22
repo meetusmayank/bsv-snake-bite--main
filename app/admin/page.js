@@ -327,6 +327,45 @@ export default function AdminPage() {
     if (r.ok) toast.success('Content saved!'); else toast.error('Save failed')
   }
 
+  const getHeroSlides = () =>
+    Array.isArray(content?.heroSlides)
+      ? [...content.heroSlides].sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0))
+      : []
+
+  const updateHeroSlides = (slides) => {
+    setContent({ ...content, heroSlides: slides })
+  }
+
+  const addHeroSlide = () => {
+    const slides = getHeroSlides()
+    const nextOrder = slides.length
+      ? Math.max(...slides.map(s => Number(s.order) || 0)) + 1
+      : 1
+
+    updateHeroSlides([
+      ...slides,
+      {
+        id: `hero-${Date.now()}`,
+        image: '',
+        order: nextOrder,
+        active: true,
+      },
+    ])
+  }
+
+  const updateHeroSlide = (id, patch) => {
+    updateHeroSlides(
+      getHeroSlides().map(slide =>
+        slide.id === id ? { ...slide, ...patch } : slide
+      )
+    )
+  }
+
+  const deleteHeroSlide = (id) => {
+    if (!confirm('Delete this hero slide?')) return
+    updateHeroSlides(getHeroSlides().filter(slide => slide.id !== id))
+  }
+
   const resetContent = async () => {
     if (!confirm('Reset all content to defaults?')) return
     const r = await api('/api/content/reset', 'POST')
@@ -478,67 +517,78 @@ export default function AdminPage() {
                   </div>
                 </CardContent></Card>
 
-                {/* HERO */}
-                <Card><CardContent className="p-5 space-y-3">
-                  <h3 className="font-display font-bold text-lg text-bsv-blue">Hero Section</h3>
-                  <MediaPicker label="Hero Background Image" value={content.hero.image} onChange={v => setContent({ ...content, hero: { ...content.hero, image: v } })} />
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <div>
-                      <Label>Left Top Text</Label>
-                      <Input
-                        value={content.hero.leftTop || ''}
-                        onChange={e => setContent({ ...content, hero: { ...content.hero, leftTop: e.target.value } })}
-                        placeholder="INDIA LOSES"
-                      />
+                {/* HERO SLIDES */}
+                <Card>
+                  <CardContent className="p-5 space-y-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="font-display font-bold text-lg text-bsv-blue">Hero Slides</h3>
+                      </div>
+
+                      <Button type="button" onClick={addHeroSlide} className="bg-bsv-red">
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add Slide
+                      </Button>
                     </div>
 
-                    <div>
-                      <Label>Big Number</Label>
-                      <Input
-                        value={content.hero.bigNumber || ''}
-                        onChange={e => setContent({ ...content, hero: { ...content.hero, bigNumber: e.target.value } })}
-                        placeholder="50,000"
-                      />
+                    <div className="space-y-4">
+                      {getHeroSlides().map((slide, index) => (
+                        <div key={slide.id} className="border rounded-xl p-4 bg-white space-y-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="font-semibold text-bsv-blue">
+                              Slide {index + 1}
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2 text-sm">
+                                <span>Active</span>
+                                <Switch
+                                  checked={slide.active !== false}
+                                  onCheckedChange={c => updateHeroSlide(slide.id, { active: c })}
+                                />
+                              </div>
+
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => deleteHeroSlide(slide.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          <MediaPicker
+                            label="Slide Image"
+                            value={slide.image || ''}
+                            onChange={v => updateHeroSlide(slide.id, { image: v })}
+                          />
+
+                          <div className="max-w-xs">
+                            <Label>Sort Order</Label>
+                            <Input
+                              type="number"
+                              value={slide.order ?? index + 1}
+                              onChange={e =>
+                                updateHeroSlide(slide.id, {
+                                  order: Number(e.target.value) || 0,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+                      ))}
+
+                      {!getHeroSlides().length && (
+                        <div className="border border-dashed rounded-xl p-8 text-center text-muted-foreground">
+                          Add Slides.
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  </CardContent>
+                </Card>
 
-                  <div>
-                    <Label>Left Bottom Text</Label>
-                    <Textarea
-                      value={content.hero.leftBottom || ''}
-                      onChange={e => setContent({ ...content, hero: { ...content.hero, leftBottom: e.target.value } })}
-                      placeholder="LIVES TO SNAKE&#10;BITES EVERY YEAR"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Right Main Text</Label>
-                    <Input
-                      value={content.hero.rightMain || ''}
-                      onChange={e => setContent({ ...content, hero: { ...content.hero, rightMain: e.target.value } })}
-                      placeholder="SAANP KA VAAR,"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Right Sub Text</Label>
-                    <Input
-                      value={content.hero.rightSub || ''}
-                      onChange={e => setContent({ ...content, hero: { ...content.hero, rightSub: e.target.value } })}
-                      placeholder="ASPATAAL MEIN HI UPCHAAR!"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Tagline</Label>
-                    <Input
-                      value={content.hero.tagline || ''}
-                      onChange={e => setContent({ ...content, hero: { ...content.hero, tagline: e.target.value } })}
-                      placeholder="Snake bite? Only hospital can treat it right."
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3"><div><Label>Primary CTA</Label><Input value={content.hero.cta1} onChange={e => setContent({ ...content, hero: { ...content.hero, cta1: e.target.value } })} /></div><div><Label>Secondary CTA</Label><Input value={content.hero.cta2} onChange={e => setContent({ ...content, hero: { ...content.hero, cta2: e.target.value } })} /></div></div>
-                </CardContent></Card>
 
                 {/* IMPACT STATS */}
                 <Card><CardContent className="p-5">
