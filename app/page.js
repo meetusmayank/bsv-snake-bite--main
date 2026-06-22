@@ -1,7 +1,7 @@
 'use client'
 /* eslint-disable react-hooks/set-state-in-effect, react-hooks/immutability */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -480,89 +480,146 @@ function Header({ lang, setLang, t, settings }) {
 
 function Hero({ content, t }) {
   const stats = content?.heroStats || []
+
+  const slides = Array.isArray(content?.heroSlides)
+    ? content.heroSlides
+        .filter(slide => slide?.image && slide.active !== false)
+        .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0))
+    : []
+
+  const sliderRef = useRef(null)
+  const [activeSlide, setActiveSlide] = useState(0)
+
+  const scrollToSlide = (index) => {
+    if (!sliderRef.current) return
+
+    const slider = sliderRef.current
+    const card = slider.querySelector('[data-hero-card]')
+    if (!card) return
+
+    const gap = 20
+    const left = index * (card.offsetWidth + gap)
+
+    slider.scrollTo({
+      left,
+      behavior: 'smooth',
+    })
+
+    setActiveSlide(index)
+  }
+
+  const scrollHero = (direction) => {
+    if (!slides.length) return
+
+    const nextIndex =
+      direction === 'next'
+        ? Math.min(activeSlide + 1, slides.length - 1)
+        : Math.max(activeSlide - 1, 0)
+
+    scrollToSlide(nextIndex)
+  }
+
+  if (!slides.length) return null
+
   return (
-    <section id="home" className="relative min-h-[100vh] flex items-end overflow-hidden pt-16">
-      {/* Background */}
-      <div className="absolute inset-0">
-        {content?.hero?.image && <img src={content.hero.image} alt="" className="w-full h-full object-cover" />}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-red-900/20" />
-      </div>
+    <section
+      id="home"
+      className="relative overflow-hidden pt-20 sm:pt-24 pb-8 sm:pb-12 bg-gradient-to-b from-slate-50 via-white to-slate-50"
+    >
+      <div className="container mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="relative">
 
-      <div className="relative container mx-auto px-3 sm:px-4 lg:px-8 py-8 sm:py-12 w-full">
-
-        <div className="relative mb-6 sm:mb-8 min-h-[420px] sm:min-h-[350px]">
-
-          {/* ===== LEFT SIDE TEXT - TOP LEFT ===== */}
-          <div className="absolute left-0 top-0 max-w-[65%] sm:max-w-[55%]">
-            <div
-              className="text-xl sm:text-2xl md:text-4xl font-extrabold uppercase tracking-wider text-white"
-              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 4px 40px rgba(0,0,0,0.8)' }}
+          {/* Desktop Left Arrow */}
+          {slides.length > 1 && (
+            <button
+              type="button"
+              onClick={() => scrollHero('prev')}
+              className="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white shadow-lg text-2xl font-bold items-center justify-center"
+              style={{ color: BRAND.blue }}
             >
-              {content?.hero?.leftTop}
-            </div>
+              ‹
+            </button>
+          )}
 
-            <div
-              className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black leading-none"
-              style={{
-                color: '#de2527',
-                textShadow: '0 4px 30px rgba(0,0,0,0.9)'
-              }}
-            >
-              {content?.hero?.bigNumber}
-            </div>
-
-            <div
-              className="text-xl sm:text-xl md:text-4xl font-extrabold uppercase leading-tight mt-1 sm:mt-3 whitespace-pre-line text-white"
-              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 4px 40px rgba(0,0,0,0.8)' }}
-            >
-              {content?.hero?.leftBottom}
-            </div>
-          </div>
-
-          {/* ===== RIGHT SIDE TEXT - BOTTOM RIGHT ===== */}
-          <div className="absolute right-0 bottom-8 text-right max-w-[65%] sm:max-w-[50%]">
-            <div
-              className="text-xl sm:text-2xl md:text-6xl font-black uppercase leading-tight"
-              style={{
-                color: '#de2527',
-                textShadow: '0 4px 30px rgba(0,0,0,0.9)'
-              }}
-            >
-              {content?.hero?.rightMain}
-            </div>
-
-            <div
-              className="text-lg sm:text-xl md:text-4xl font-extrabold uppercase leading-tight"
-              style={{
-                color: '#de2527',
-                textShadow: '0 4px 30px rgba(0,0,0,0.9)'
-              }}
-            >
-              {content?.hero?.rightSub}
-            </div>
-
-            <div
-              className="text-sm sm:text-base md:text-2xl italic text-white mt-0.5 sm:mt-2 font-medium"
-              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 4px 40px rgba(0,0,0,0.8)' }}
-            >
-              {content?.hero?.tagline}
+          <div
+            ref={sliderRef}
+            className="overflow-x-auto no-scrollbar scroll-smooth pb-4"
+          >
+            <div className="flex gap-4 sm:gap-5 w-max">
+              {slides.map((slide, i) => (
+                <div
+                  key={slide.id || i}
+                  data-hero-card
+                  className="relative w-[82vw] sm:w-[46vw] lg:w-[47vw] h-[260px] sm:h-[320px] lg:h-[360px] overflow-hidden rounded-[1.5rem] shadow-xl bg-white flex-shrink-0"
+                >
+                  <img
+                    src={slide.image}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
             </div>
           </div>
+
+          {/* Desktop Right Arrow */}
+          {slides.length > 1 && (
+            <button
+              type="button"
+              onClick={() => scrollHero('next')}
+              className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white shadow-lg text-2xl font-bold items-center justify-center"
+              style={{ color: BRAND.blue }}
+            >
+              ›
+            </button>
+          )}
+
+          {/* Dots */}
+          {slides.length > 1 && (
+            <div className="hidden md:flex justify-center gap-2 mt-4">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => scrollToSlide(i)}
+                  className={`h-2 rounded-full transition-all ${
+                    i === activeSlide
+                      ? 'w-8 bg-bsv-red'
+                      : 'w-2 bg-slate-300'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2.5 md:gap-3 max-w-5xl">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-3 max-w-5xl mx-auto mt-6 relative z-10">
           {stats.map((s, i) => {
             const Icon = ICONS[s.icon] || Heart
+
             return (
-              <motion.div key={s.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+              <motion.div
+                key={s.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
                 <Card className="bg-white/95 backdrop-blur shadow-xl hover:-translate-y-1 transition border-0">
-                  <CardContent className="p-2 sm:p-3 md:p-4">
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 mb-1 sm:mb-1.5" style={{ color: BRAND.red }} />
-                    <div className="font-display font-bold text-sm sm:text-xl md:text-2xl mb-0.5 leading-tight" style={{ color: BRAND.blue }}>
+                  <CardContent className="p-3 sm:p-4">
+                    <Icon
+                      className="w-5 h-5 sm:w-6 sm:h-6 mb-1.5"
+                      style={{ color: BRAND.red }}
+                    />
+
+                    <div
+                      className="font-display font-bold text-xl md:text-2xl mb-0.5 leading-tight"
+                      style={{ color: BRAND.blue }}
+                    >
                       <AnimatedCounter value={s.value} suffix={s.suffix} />
                     </div>
-                    <div className="text-[8px] sm:text-[11px] md:text-xs text-slate-700 font-semibold leading-tight">
+
+                    <div className="text-[11px] md:text-xs text-slate-700 font-semibold leading-tight">
                       {s.label}
                     </div>
                   </CardContent>
