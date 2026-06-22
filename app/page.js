@@ -281,7 +281,12 @@ function Header({ lang, setLang, t, settings }) {
             />
 
             <div className="min-w-0 flex-1">
-              {/* Tagline baad me yahan rahegi */}
+              <div
+                className="text-[8px] sm:text-[11px] md:text-xs font-medium leading-tight"
+                style={{ color: BRAND.blue }}
+              >
+                Saap Ka Vaar, Aspataal Mein Hi Upchaar
+              </div>
             </div>
           </button>
 
@@ -328,7 +333,7 @@ function Header({ lang, setLang, t, settings }) {
           <div className="flex items-center gap-2 sm:gap-3">
             <img
               src={settings?.branding?.mankindLogo}
-              alt="Mankind" 
+              alt="Mankind"
               className="h-8 sm:h-10 md:h-12 w-auto flex-shrink-0"
               draggable={false}
             />
